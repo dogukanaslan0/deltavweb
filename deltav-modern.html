@@ -1,0 +1,5789 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="DELTAV Uzay Teknolojileri A.Ş. — Türkiye'nin İtki Gücü. Hibrit ve sıvı yakıtlı roket teknolojileri, kompozit ve kriyojenik sistemler. SORS ile 200 km irtifa rekoru, uzayda ilk Türk hibrit ateşlemesi." />
+  <meta name="keywords"
+    content="deltav, uzay, roket, hibrit motor, his, sors, ayap, türkiye uzay ajansı, teknopark pendik, kompozit, kriyojenik" />
+  <meta name="author" content="DELTAV Uzay Teknolojileri A.Ş." />
+  <meta property="og:title" content="DELTAV Uzay Teknolojileri — Türkiye'nin İtki Gücü" />
+  <meta property="og:description"
+    content="İnsanlığı uzaya taşıyan teknolojiler. SORS ile 200 km irtifa, uzayda ateşlenen ilk Türk hibrit sistemi." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="gorsel-linki.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="gorsel-linki.jpg" />
+  <title>DELTAV Uzay Teknolojileri — Türkiye'nin İtki Gücü</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+  <style>
+    @property --accent-glow {
+      syntax: '<color>';
+      initial-value: rgba(0, 200, 240, 0.4);
+      inherits: false;
+    }
+
+    @property --progress {
+      syntax: '<percentage>';
+      initial-value: 0%;
+      inherits: false;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --black: #03050a;
+      --deep: #070d1a;
+      --navy: #0b1629;
+      --accent: #00c8f0;
+      --accent-dim: rgba(0, 200, 240, 0.15);
+      --accent2: #ff5c2e;
+      --white: #eef2f7;
+      --muted: #8a9bb0;
+      --border: rgba(0, 200, 240, 0.12);
+      --font-body: 'Inter', sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+    }
+
+    html {
+      scroll-behavior: auto;
+    }
+
+    html.lenis,
+    html.lenis body {
+      height: auto;
+    }
+
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-weight: 400;
+      overflow-x: hidden;
+      cursor: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: var(--black);
+    }
+
+    /* ─── LOADING SCREEN ─── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: var(--black);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #loader.done {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-logo {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--white);
+    }
+
+    .loader-logo em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 48px;
+      width: auto;
+      transition: opacity 0.4s, transform 0.4s, filter 0.4s;
+      filter: drop-shadow(0 0 0 transparent);
+    }
+
+    .brand-logo.large {
+      height: 110px;
+    }
+
+    .brand-logo.footer {
+      height: 38px;
+    }
+
+    .logo:hover .brand-logo {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      filter: drop-shadow(0 0 14px rgba(0, 200, 240, 0.35));
+    }
+
+    .loader-track {
+      width: 200px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loader-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: var(--progress);
+      background: linear-gradient(90deg, var(--accent), var(--white));
+      transition: width 0.3s ease;
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    .loader-status {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ─── CANVAS ─── */
+    #space-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── CUSTOM CURSOR ─── */
+    #cursor {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, background 0.3s;
+      mix-blend-mode: screen;
+      will-change: transform;
+    }
+
+    #cursor.hover {
+      width: 48px;
+      height: 48px;
+      background: transparent;
+      border: 1px solid var(--accent);
+    }
+
+    #cursor.magnetic {
+      width: 64px;
+      height: 64px;
+      background: rgba(0, 200, 240, 0.1);
+      border: 1px solid var(--accent);
+    }
+
+    #cursor-trail {
+      position: fixed;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(0, 200, 240, 0.35);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s, height 0.4s;
+      will-change: transform;
+    }
+
+    .trail-dot {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99997;
+      opacity: 0.6;
+    }
+
+    /* ─── NAVIGATION ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 56px;
+      transition: padding 0.4s, background 0.4s, border-color 0.4s, transform 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+
+    nav.pinned {
+      padding: 16px 56px;
+      background: rgba(3, 5, 10, 0.3);
+      backdrop-filter: blur(24px) saturate(1.4);
+      border-color: var(--border);
+    }
+
+    nav.hidden {
+      transform: translateY(-100%);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--white);
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+
+    .logo em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+      padding: 4px 0;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .nav-links a:hover {
+      color: var(--white);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-lang {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .nav-lang:hover {
+      color: var(--white);
+    }
+
+    .nav-btn {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 12px 24px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.4s, border-color 0.4s;
+      display: inline-block;
+    }
+
+    .nav-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: -1;
+    }
+
+    .nav-btn:hover {
+      color: var(--black);
+      border-color: var(--accent);
+    }
+
+    .nav-btn:hover::before {
+      transform: translateX(0);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 210;
+      padding: 8px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--white);
+      transition: 0.3s;
+      transform-origin: center;
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    /* ─── MOBILE NAV ─── */
+    .mob-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 190;
+      background: rgba(3, 5, 10, 0.98);
+      backdrop-filter: blur(30px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .mob-nav.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .mob-nav a {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      text-decoration: none;
+      transition: color 0.3s, transform 0.3s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .mob-nav.open a {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .mob-nav a:hover {
+      color: var(--accent);
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 56px 120px;
+      overflow: hidden;
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .hero-media video,
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.5;
+    }
+
+    /* Hero rocket override — right-side composition */
+    .hero-media .hero-rocket {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      filter: drop-shadow(-20px 30px 60px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 80px rgba(0, 200, 240, 0.08));
+      animation: rocketFloat 8s ease-in-out infinite;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    @keyframes rocketFloat {
+
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0);
+      }
+
+      50% {
+        transform: translate3d(0, -12px, 0);
+      }
+    }
+
+
+    .hero-media::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+          rgba(3, 5, 10, 0.0) 0%,
+          rgba(3, 5, 10, 0.0) 40%,
+          rgba(3, 5, 10, 0.95) 100%);
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .hero-eyebrow span {
+      display: inline-block;
+    }
+
+    h1.hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(64px, 10vw, 160px);
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      max-width: 900px;
+    }
+
+    h1.hero-title .line {
+      display: block;
+      overflow: hidden;
+      padding-top: 0.22em;
+      margin-top: -0.22em;
+    }
+
+    h1.hero-title .line-inner {
+      display: block;
+      transform: translateY(120%);
+    }
+
+    h1.hero-title em {
+      color: var(--accent);
+      font-style: normal;
+      position: relative;
+    }
+
+    h1.hero-title em::after {
+      content: '';
+      position: absolute;
+      bottom: 0.05em;
+      left: 0;
+      width: 100%;
+      height: 0.08em;
+      background: var(--accent);
+      opacity: 0.4;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: underlineExpand 1.2s ease 1.5s forwards;
+    }
+
+    @keyframes underlineExpand {
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.8;
+      margin-top: 28px;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .btn-fill {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      background: var(--accent);
+      color: var(--black);
+      padding: 16px 36px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: none;
+      cursor: none;
+    }
+
+    .btn-fill:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(0, 200, 240, 0.3);
+    }
+
+    .btn-fill .arrow {
+      transition: transform 0.3s;
+    }
+
+    .btn-fill:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    .btn-ghost {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 16px 36px;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+    }
+
+    .btn-ghost::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: -1;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-ghost:hover::before {
+      transform: translateX(0);
+    }
+
+    /* Hero stats */
+    .hero-stats {
+      position: absolute;
+      bottom: 120px;
+      right: 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      text-align: right;
+    }
+
+    .hstat-num {
+      font-family: var(--font-display);
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .hstat-num span {
+      color: var(--accent);
+    }
+
+    .hstat-lbl {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Scroll indicator */
+    .hero-scroll {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scroll-track {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-track::after {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+
+      0%,
+      100% {
+        top: -100%;
+        opacity: 1;
+      }
+
+      50% {
+        top: 100%;
+        opacity: 0;
+      }
+    }
+
+    .scroll-lbl {
+      font-family: var(--font-display);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+    }
+
+    /* ─── TICKER ─── */
+    .ticker-wrap {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 200, 240, 0.02);
+      overflow: hidden;
+      padding: 18px 0;
+    }
+
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: tickScroll 40s linear infinite;
+    }
+
+    @keyframes tickScroll {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .ticker-inner {
+      display: flex;
+      align-items: center;
+      gap: 64px;
+      padding: 0 32px;
+      flex-shrink: 0;
+    }
+
+    .t-item {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .t-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.6);
+      }
+    }
+
+    /* ─── SECTION UTILS ─── */
+    .s-label {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .s-label::before {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .s-title {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5.5vw, 84px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      color: var(--white);
+    }
+
+    .s-body {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 540px;
+    }
+
+    /* ─── ABOUT ─── */
+    #about {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 160px 56px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 120px;
+      align-items: center;
+    }
+
+    .about-frame {
+      position: relative;
+      aspect-ratio: 4/5;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .about-frame-inner {
+      position: absolute;
+      inset: 12px;
+      background: linear-gradient(135deg, var(--navy), rgba(0, 200, 240, 0.04));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .about-frame-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.75;
+      transition: transform 0.8s ease, opacity 0.4s;
+    }
+
+    .about-frame:hover .about-frame-inner img {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    .about-frame-icon {
+      width: 80px;
+      height: 80px;
+      opacity: 0.08;
+    }
+
+    .about-line {
+      position: absolute;
+      top: 48px;
+      left: -28px;
+      width: 2px;
+      height: 140px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    .about-tag {
+      position: absolute;
+      bottom: 32px;
+      right: 32px;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      background: rgba(3, 5, 10, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    .about-text {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .about-text p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .about-metrics {
+      display: flex;
+      gap: 48px;
+      margin-top: 16px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .am-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .am-num {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .am-lbl {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ─── CAPABILITIES ─── */
+    #capabilities {
+      position: relative;
+      z-index: 1;
+      padding: 160px 0;
+      overflow: hidden;
+    }
+
+    .cap-hd {
+      max-width: 1400px;
+      margin: 0 auto 80px;
+      padding: 0 56px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .cap-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 56px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .cap-card {
+      background: var(--black);
+      padding: 48px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.5s;
+      min-height: 320px;
+    }
+
+    .cap-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .cap-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 200, 240, 0.08), transparent 40%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    .cap-card:hover {
+      background: var(--deep);
+    }
+
+    .cap-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .cap-card:hover::after {
+      opacity: 1;
+    }
+
+    .cap-n {
+      font-family: var(--font-display);
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: rgba(0, 200, 240, 0.08);
+      line-height: 1;
+      transition: color 0.4s;
+    }
+
+    .cap-card:hover .cap-n {
+      color: rgba(0, 200, 240, 0.2);
+    }
+
+    .cap-ico {
+      width: 40px;
+      height: 40px;
+      color: var(--accent);
+      transition: transform 0.4s;
+    }
+
+    .cap-card:hover .cap-ico {
+      transform: scale(1.1);
+    }
+
+    .cap-ttl {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--white);
+      line-height: 1.25;
+    }
+
+    .cap-dsc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+      flex: 1;
+    }
+
+    .cap-lnk {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+      transition: gap 0.3s;
+    }
+
+    .cap-lnk:hover {
+      gap: 14px;
+    }
+
+    /* ─── HORIZONTAL SCROLL (SpaceX Style) ─── */
+    #specs {
+      position: relative;
+      z-index: 1;
+      background: var(--deep);
+      overflow: hidden;
+    }
+
+    .specs-wrapper {
+      display: flex;
+      flex-wrap: nowrap;
+      width: fit-content;
+    }
+
+    .specs-panel {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 56px;
+      position: relative;
+    }
+
+    .specs-panel:nth-child(odd) {
+      background: var(--black);
+    }
+
+    .specs-panel:nth-child(even) {
+      background: var(--deep);
+    }
+
+    .specs-content {
+      width: 100%;
+      max-width: 42vw;
+    }
+
+    .specs-visual {
+      position: absolute;
+      right: 56px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 45vw;
+      height: 70vh;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--navy), rgba(0, 200, 240, 0.03));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .specs-visual .specs-rocket {
+      font-family: var(--font-display);
+      font-size: 120px;
+      font-weight: 700;
+      color: rgba(0, 200, 240, 0.05);
+      letter-spacing: 0.1em;
+    }
+
+    .specs-num {
+      font-family: var(--font-display);
+      font-size: 120px;
+      font-weight: 700;
+      color: rgba(0, 200, 240, 0.06);
+      line-height: 1;
+      position: absolute;
+      top: 40px;
+      right: 56px;
+    }
+
+    .specs-title {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .specs-desc {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .specs-data {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .sd-item {
+      border-left: 2px solid var(--border);
+      padding-left: 16px;
+    }
+
+    .sd-val {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .sd-lbl {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .specs-progress {
+      position: absolute;
+      bottom: 40px;
+      left: 56px;
+      right: 56px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .specs-progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    /* ─── PROGRAMS ─── */
+    #programs {
+      position: relative;
+      z-index: 1;
+      padding: 160px 56px;
+    }
+
+    .prog-hd {
+      max-width: 1400px;
+      margin: 0 auto 80px;
+    }
+
+    .prog-list {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .prog-row {
+      display: grid;
+      grid-template-columns: 70px 1fr 1.4fr 140px 32px;
+      align-items: center;
+      gap: 48px;
+      padding: 36px 0;
+      border-top: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      transition: padding-left 0.4s, background 0.4s;
+    }
+
+    .prog-row::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .prog-row:last-child {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prog-row:hover {
+      padding-left: 16px;
+      background: linear-gradient(90deg, rgba(0, 200, 240, 0.03), transparent);
+    }
+
+    .prog-row:hover::before {
+      transform: scaleY(1);
+    }
+
+    .prog-idx {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+
+    .prog-row:hover .prog-idx {
+      color: var(--accent);
+    }
+
+    .prog-nm {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      transition: color 0.3s;
+    }
+
+    .prog-row:hover .prog-nm {
+      color: var(--accent);
+    }
+
+    .prog-dsc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .prog-row:hover .prog-dsc {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .prog-badge {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      white-space: nowrap;
+      text-align: center;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .prog-row:hover .prog-badge {
+      border-color: var(--accent);
+      background: rgba(0, 200, 240, 0.05);
+    }
+
+    .prog-arr {
+      width: 24px;
+      height: 24px;
+      color: var(--muted);
+      transition: transform 0.4s, color 0.3s;
+    }
+
+    .prog-row:hover .prog-arr {
+      transform: translateX(8px);
+      color: var(--accent);
+    }
+
+    /* ─── TIMELINE ─── */
+    #timeline {
+      position: relative;
+      z-index: 1;
+      padding: 160px 56px;
+      background: var(--deep);
+      overflow: hidden;
+    }
+
+    .timeline-hd {
+      max-width: 1400px;
+      margin: 0 auto 80px;
+      text-align: center;
+    }
+
+    .timeline-hd .s-label {
+      justify-content: center;
+    }
+
+    .timeline-hd .s-label::before {
+      display: none;
+    }
+
+    .timeline-track {
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border), transparent);
+      transform: translateX(-50%);
+    }
+
+    .timeline-line-progress {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 1px;
+      background: var(--accent);
+      transform: translateX(-50%);
+      height: 0%;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-bottom: 80px;
+      position: relative;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+      grid-column: 2;
+      text-align: left;
+    }
+
+    .timeline-item:nth-child(even) .timeline-date {
+      grid-column: 1;
+      text-align: right;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+      text-align: right;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      background: var(--deep);
+      z-index: 2;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .timeline-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    .timeline-date {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    .timeline-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .timeline-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    /* ─── LIVE METRICS ─── */
+    #metrics {
+      position: relative;
+      z-index: 1;
+      padding: 120px 56px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 200, 240, 0.02);
+    }
+
+    .metrics-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 48px;
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 32px;
+      border: 1px solid var(--border);
+      background: rgba(3, 5, 10, 0.5);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.6s;
+    }
+
+    .metric-card:hover {
+      border-color: rgba(0, 200, 240, 0.3);
+    }
+
+    .metric-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .metric-ico {
+      width: 28px;
+      height: 28px;
+      color: var(--accent);
+      opacity: 0.7;
+    }
+
+    .metric-val {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .metric-val .suffix {
+      font-size: 20px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .metric-lbl {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .metric-bar {
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.05);
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      width: 0%;
+      transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ─── NEWS ─── */
+    #news {
+      position: relative;
+      z-index: 1;
+      padding: 160px 56px;
+    }
+
+    .news-hd {
+      max-width: 1400px;
+      margin: 0 auto 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .news-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 2px;
+      background: var(--border);
+    }
+
+    .news-card {
+      background: var(--black);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      cursor: pointer;
+      transition: background 0.4s, transform 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .news-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 200, 240, 0.06), transparent 40%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    .news-card:hover {
+      background: var(--deep);
+      transform: translateY(-4px);
+    }
+
+    .news-card:hover::after {
+      opacity: 1;
+    }
+
+    .news-card.big {
+      grid-row: span 2;
+      justify-content: space-between;
+    }
+
+    .news-dt {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .news-ttl {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.35;
+      color: var(--white);
+      flex: 1;
+    }
+
+    .news-card.big .news-ttl {
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .news-exc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .news-lnk {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: gap 0.3s;
+      margin-top: auto;
+    }
+
+    .news-lnk:hover {
+      gap: 14px;
+    }
+
+    /* ─── CTA ─── */
+    #cta {
+      position: relative;
+      z-index: 1;
+      padding: 200px 56px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    #cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 50%, rgba(0, 200, 240, 0.08) 0%, transparent 60%);
+    }
+
+    .cta-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .cta-title {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 9vw, 140px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+      color: var(--white);
+      margin: 20px 0 32px;
+    }
+
+    .cta-title em {
+      color: var(--accent);
+      font-style: normal;
+      position: relative;
+    }
+
+    .cta-title em::after {
+      content: '';
+      position: absolute;
+      bottom: 0.02em;
+      left: -2%;
+      width: 104%;
+      height: 0.06em;
+      background: var(--accent);
+      opacity: 0.3;
+    }
+
+    .cta-body {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 48px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-acts {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-info {
+      margin-top: 80px;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+      gap: 72px;
+      flex-wrap: wrap;
+    }
+
+    .ci {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ci-l {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .ci-v {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      transition: color 0.3s;
+    }
+
+    .ci:hover .ci-v {
+      color: var(--accent);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 48px 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .f-logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--white);
+    }
+
+    .f-logo em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .f-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .f-links a {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .f-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .f-links a:hover {
+      color: var(--white);
+    }
+
+    .f-links a:hover::after {
+      width: 100%;
+    }
+
+    .f-social {
+      display: flex;
+      gap: 12px;
+    }
+
+    .f-social a {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .f-social a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: translateY(101%);
+      transition: transform 0.3s;
+      z-index: -1;
+    }
+
+    .f-social a:hover {
+      border-color: var(--accent);
+      color: var(--black);
+    }
+
+    .f-social a:hover::before {
+      transform: translateY(0);
+    }
+
+    .f-copy {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1200px) {
+      .specs-visual {
+        display: none;
+      }
+
+      .specs-panel {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .specs-content {
+        max-width: 80%;
+      }
+
+      .specs-data {
+        justify-content: center;
+      }
+
+      .specs-num {
+        font-size: 80px;
+      }
+    }
+
+    @media (max-width: 1080px) {
+
+      nav,
+      nav.pinned {
+        padding: 18px 28px;
+      }
+
+      .nav-links,
+      .nav-btn {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      #hero {
+        padding: 0 28px 100px;
+      }
+
+      .mission-clock {
+        top: 80px;
+        right: 28px;
+      }
+
+      .hero-stats {
+        display: none;
+      }
+
+      #about {
+        grid-template-columns: 1fr;
+        padding: 100px 28px;
+        gap: 56px;
+      }
+
+      .about-frame {
+        max-height: 400px;
+      }
+
+      #capabilities {
+        padding: 100px 28px;
+      }
+
+      .cap-hd {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 0 28px;
+      }
+
+      .cap-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 28px;
+      }
+
+      .specs-panel {
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 28px;
+      }
+
+      .specs-content {
+        max-width: 100%;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .specs-visual {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        width: 100%;
+        height: 40vh;
+      }
+
+      .specs-num {
+        right: 28px;
+        top: 28px;
+        font-size: 80px;
+      }
+
+      #programs {
+        padding: 100px 28px;
+      }
+
+      .prog-row {
+        grid-template-columns: 50px 1fr;
+        gap: 16px;
+      }
+
+      .prog-dsc,
+      .prog-badge {
+        display: none;
+      }
+
+      #news {
+        padding: 100px 28px;
+      }
+
+      .news-hd {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+      }
+
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .news-card.big {
+        grid-row: auto;
+      }
+
+      #timeline {
+        padding: 100px 28px;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        text-align: left !important;
+      }
+
+      .timeline-item:nth-child(even) .timeline-content,
+      .timeline-item:nth-child(odd) .timeline-content {
+        grid-column: 1;
+        text-align: left;
+      }
+
+      .timeline-item:nth-child(even) .timeline-date {
+        grid-column: 1;
+        text-align: left;
+      }
+
+      .timeline-dot {
+        display: none;
+      }
+
+      .timeline-line,
+      .timeline-line-progress {
+        left: 0;
+      }
+
+      #metrics {
+        padding: 80px 28px;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+
+      #cta {
+        padding: 120px 28px;
+      }
+
+      .cta-info {
+        gap: 36px;
+      }
+
+      footer {
+        padding: 32px 28px;
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1.hero-title {
+        font-size: 48px;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+      }
+
+      .cap-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .specs-title {
+        font-size: 28px;
+      }
+
+      .specs-data {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-info {
+        flex-direction: column;
+        gap: 24px;
+        align-items: center;
+      }
+    }
+
+    /* ─── REDUCED MOTION ─── */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .ticker-track {
+        animation: none;
+      }
+
+      body {
+        cursor: auto !important;
+      }
+
+      #cursor,
+      #cursor-trail,
+      .trail-dot {
+        display: none !important;
+      }
+
+      .hero-media .hero-rocket {
+        animation: none !important;
+      }
+
+      .fx-grain {
+        animation: none !important;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       v2 — INTERACTIVE / HUD UPGRADES
+    ═══════════════════════════════════════════ */
+
+    :root {
+      --mono: 'JetBrains Mono', 'Space Grotesk', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --hot: #ff5c2e;
+      --hot-dim: rgba(255, 92, 46, 0.18);
+      --grid-line: rgba(0, 200, 240, 0.06);
+    }
+
+    /* ─── BLUEPRINT GRID OVERLAY ─── */
+    .blueprint-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      z-index: 0;
+    }
+
+    /* ─── SIDE VERTICAL RULER (scroll altitude HUD) ─── */
+    .side-ruler {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      z-index: 150;
+      width: 56px;
+      height: 60vh;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
+      opacity: 0;
+      transition: opacity 0.6s;
+    }
+
+    .side-ruler.show {
+      opacity: 1;
+    }
+
+    .side-ruler-line {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border) 12%, var(--border) 88%, transparent);
+    }
+
+    .side-ruler-tick {
+      position: absolute;
+      right: 0;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .side-ruler-tick.major {
+      width: 14px;
+    }
+
+    .side-ruler-tick.minor {
+      width: 6px;
+      opacity: 0.5;
+    }
+
+    .side-ruler-label {
+      position: absolute;
+      right: 22px;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+
+    .side-ruler-marker {
+      position: absolute;
+      right: -4px;
+      width: 22px;
+      height: 22px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .side-ruler-marker::before {
+      content: '';
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      width: 12px;
+      height: 1px;
+      background: var(--hot);
+      box-shadow: 0 0 8px var(--hot);
+    }
+
+    .side-ruler-marker::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      transform: translateY(-50%) rotate(45deg);
+      background: var(--hot);
+      box-shadow: 0 0 10px var(--hot);
+    }
+
+    .side-ruler-readout {
+      position: absolute;
+      left: -110px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--hot);
+      text-shadow: 0 0 8px rgba(255, 92, 46, 0.4);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1080px) {
+      .side-ruler {
+        display: none;
+      }
+    }
+
+    /* ─── HERO MISSION CONTROL HUD ─── */
+    .hero-grid-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background-image:
+        linear-gradient(to right, rgba(0, 200, 240, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 200, 240, 0.04) 1px, transparent 1px);
+      background-size: 100px 100px;
+      mask-image: linear-gradient(to bottom, transparent, black 25%, black 70%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 70%, transparent);
+    }
+
+    .mission-clock {
+      position: absolute;
+      top: 120px;
+      right: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      z-index: 10;
+      font-family: var(--mono);
+    }
+
+    .mc-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mc-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--hot);
+      box-shadow: 0 0 8px var(--hot);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.45;
+        transform: scale(0.6);
+      }
+    }
+
+    .mc-time {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--white);
+    }
+
+    .mc-coord {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    /* upgrade hero-stats to telemetry HUD */
+    .hero-stats {
+      gap: 16px !important;
+    }
+
+    .hero-stats>div {
+      border: 1px solid var(--border);
+      padding: 16px 22px 14px;
+      background: rgba(3, 5, 10, 0.55);
+      backdrop-filter: blur(12px);
+      position: relative;
+      min-width: 200px;
+      transition: border-color 0.4s, background 0.4s;
+    }
+
+    .hero-stats>div::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      width: 10px;
+      height: 10px;
+      border-top: 1px solid var(--accent);
+      border-left: 1px solid var(--accent);
+    }
+
+    .hero-stats>div::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 10px;
+      height: 10px;
+      border-bottom: 1px solid var(--accent);
+      border-right: 1px solid var(--accent);
+    }
+
+    .hero-stats>div:hover {
+      border-color: var(--accent);
+      background: rgba(0, 200, 240, 0.05);
+    }
+
+    .hstat-num {
+      font-size: 36px !important;
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+
+    .hstat-suffix {
+      color: var(--accent);
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .hstat-spark {
+      position: absolute;
+      bottom: 6px;
+      left: 16px;
+      right: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+
+    /* ─── CORNER BRACKETS (engineered frame) ─── */
+    .corner-frame {
+      position: relative;
+    }
+
+    .corner-frame::before,
+    .corner-frame::after,
+    .corner-frame>.cf-c1,
+    .corner-frame>.cf-c2 {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: var(--accent);
+      border-style: solid;
+      border-width: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .corner-frame::before {
+      top: -1px;
+      left: -1px;
+      border-top-width: 1px;
+      border-left-width: 1px;
+    }
+
+    .corner-frame::after {
+      top: -1px;
+      right: -1px;
+      border-top-width: 1px;
+      border-right-width: 1px;
+    }
+
+    .corner-frame>.cf-c1 {
+      bottom: -1px;
+      left: -1px;
+      border-bottom-width: 1px;
+      border-left-width: 1px;
+    }
+
+    .corner-frame>.cf-c2 {
+      bottom: -1px;
+      right: -1px;
+      border-bottom-width: 1px;
+      border-right-width: 1px;
+    }
+
+    .about-coords {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      opacity: 0.7;
+      z-index: 5;
+      line-height: 1.8;
+    }
+
+    .about-readout {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--hot);
+      z-index: 5;
+    }
+
+    .about-readout::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--hot);
+      box-shadow: 0 0 8px var(--hot);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+
+    /* ─── CAPABILITIES BENTO GRID ─── */
+    .cap-grid {
+      grid-template-columns: 1.6fr 1fr 1fr !important;
+      grid-template-rows: 1fr 1fr !important;
+      grid-auto-flow: row;
+      min-height: 640px;
+    }
+
+    .cap-card.feature {
+      grid-row: span 2;
+      grid-column: 1;
+      padding: 56px 48px !important;
+      background: linear-gradient(135deg, rgba(0, 200, 240, 0.04), var(--black)) !important;
+    }
+
+    .cap-card.feature .cap-n {
+      font-size: 88px !important;
+    }
+
+    .cap-card.feature .cap-ttl {
+      font-size: 32px !important;
+    }
+
+    .cap-card.feature .cap-dsc {
+      font-size: 15px;
+      max-width: 420px;
+    }
+
+    .cap-card.feature .cap-ico {
+      width: 56px !important;
+      height: 56px !important;
+    }
+
+    .cap-card.feature::after {
+      background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 200, 240, 0.12), transparent 45%) !important;
+    }
+
+    .cap-status {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--hot);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cap-status::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--hot);
+      box-shadow: 0 0 6px var(--hot);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+
+    @media (max-width: 1080px) {
+      .cap-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: auto !important;
+        min-height: auto;
+      }
+
+      .cap-card.feature {
+        grid-row: span 1;
+        grid-column: span 2;
+        padding: 40px 32px !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .cap-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .cap-card.feature {
+        grid-column: span 1;
+      }
+    }
+
+    /* ─── PROGRAMS — sliding tech detail ─── */
+    .prog-row {
+      overflow: hidden;
+    }
+
+    .prog-meta {
+      position: absolute;
+      left: 38%;
+      top: 50%;
+      transform: translateY(-50%) translateX(20px);
+      display: flex;
+      gap: 36px;
+      opacity: 0;
+      transition: opacity 0.4s, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      pointer-events: none;
+    }
+
+    .prog-row:hover .prog-meta {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .prog-meta .pm-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: flex-start;
+    }
+
+    .prog-meta .pm-val {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    .prog-meta .pm-lbl {
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1080px) {
+      .prog-meta {
+        display: none;
+      }
+    }
+
+    /* ─── TIMELINE — monumental years ─── */
+    .timeline-year {
+      font-family: var(--font-display);
+      font-size: clamp(72px, 9vw, 140px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 0.85;
+      color: rgba(0, 200, 240, 0.08);
+      transition: color 0.5s, text-shadow 0.5s;
+      position: relative;
+      display: inline-block;
+    }
+
+    .timeline-item.active .timeline-year {
+      color: var(--accent);
+      text-shadow: 0 0 40px rgba(0, 200, 240, 0.4);
+    }
+
+    .timeline-item:nth-child(even) .timeline-date {
+      grid-column: 1;
+      text-align: right;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-date {
+      text-align: left;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+      grid-column: 2;
+      text-align: left;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+      grid-column: 1;
+      text-align: right;
+    }
+
+    .timeline-content {
+      padding: 16px 0;
+    }
+
+    .timeline-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .timeline-tag::before {
+      content: '';
+      width: 18px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .timeline-item.active .timeline-tag {
+      color: var(--hot);
+    }
+
+    .timeline-item.active .timeline-tag::before {
+      background: var(--hot);
+    }
+
+    .timeline-item.active .timeline-dot {
+      background: var(--hot);
+      border-color: var(--hot);
+      box-shadow: 0 0 24px var(--hot), 0 0 60px var(--hot-dim);
+      animation: dotBeacon 1.6s ease-in-out infinite;
+    }
+
+    @keyframes dotBeacon {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.4);
+      }
+    }
+
+    .timeline-line-progress {
+      background: linear-gradient(to bottom, var(--accent) 0%, var(--accent) 70%, var(--hot) 100%);
+      box-shadow: 0 0 14px var(--accent);
+    }
+
+    /* ─── METRICS — HUD aesthetic ─── */
+    .metric-card {
+      padding-bottom: 28px !important;
+    }
+
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border) 30%, var(--border) 70%, transparent);
+    }
+
+    .metric-spark {
+      width: 100%;
+      height: 32px;
+      margin-top: 8px;
+    }
+
+    .metric-spark path {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 4px rgba(0, 200, 240, 0.5));
+    }
+
+    .metric-spark .spark-area {
+      fill: url(#sparkGradient);
+      stroke: none;
+      opacity: 0.6;
+    }
+
+    .metric-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metric-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .metric-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+      animation: livePulse 2s ease-in-out infinite;
+    }
+
+    .metric-card:nth-child(2) .metric-tag::before {
+      background: var(--hot);
+      box-shadow: 0 0 6px var(--hot);
+    }
+
+    .metric-card:nth-child(2) .metric-spark path:not(.spark-area) {
+      stroke: var(--hot);
+      filter: drop-shadow(0 0 4px rgba(255, 92, 46, 0.5));
+    }
+
+    /* ─── NEWS — featured upgrade ─── */
+    .news-card.big {
+      background: linear-gradient(135deg, var(--deep), var(--black)) !important;
+      position: relative;
+    }
+
+    .news-card.big::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(0, 200, 240, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 200, 240, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse at top right, black, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at top right, black, transparent 70%);
+      pointer-events: none;
+    }
+
+    .news-card.big>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .news-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--hot);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .news-tag::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--hot);
+      box-shadow: 0 0 6px var(--hot);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+
+    /* ─── CTA — instrument panel ─── */
+    .cta-info {
+      gap: 0 !important;
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 720px;
+      margin: 80px auto 0;
+    }
+
+    .cta-info .ci {
+      padding: 24px 24px;
+      border-left: 1px solid var(--border);
+      align-items: center;
+      text-align: center;
+    }
+
+    .cta-info .ci:first-child {
+      border-left: none;
+    }
+
+    @media (max-width: 720px) {
+      .cta-info {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-info .ci {
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+
+      .cta-info .ci:first-child {
+        border-top: none;
+      }
+    }
+
+    /* ─── FOOTER — partner strip ─── */
+    .partners-strip {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 36px 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 56px;
+      flex-wrap: wrap;
+      background: rgba(0, 200, 240, 0.015);
+    }
+
+    .partners-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .partner {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      transition: color 0.3s, transform 0.3s;
+      cursor: default;
+    }
+
+    .partner:hover {
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 1080px) {
+      .partners-strip {
+        padding: 28px 28px;
+        gap: 28px;
+      }
+
+      .partner {
+        font-size: 11px;
+      }
+    }
+
+    /* ─── SECTION INDICATOR (left-side fixed) ─── */
+    .section-indicator {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      opacity: 0;
+      transition: opacity 0.6s;
+      pointer-events: auto;
+    }
+
+    .section-indicator.show {
+      opacity: 1;
+    }
+
+    .section-indicator a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: none;
+    }
+
+    .section-indicator .si-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      opacity: 0.5;
+      transition: background 0.3s, transform 0.3s, opacity 0.3s, box-shadow 0.3s;
+    }
+
+    .section-indicator a:hover .si-dot,
+    .section-indicator a.active .si-dot {
+      background: var(--accent);
+      opacity: 1;
+      transform: scale(1.6);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .section-indicator .si-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.3s, transform 0.3s, color 0.3s;
+      white-space: nowrap;
+    }
+
+    .section-indicator a:hover .si-label,
+    .section-indicator a.active .si-label {
+      opacity: 1;
+      transform: translateX(0);
+      color: var(--white);
+    }
+
+    @media (max-width: 1080px) {
+      .section-indicator {
+        display: none;
+      }
+    }
+
+    /* ─── LOADER UPGRADE ─── */
+    .loader-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(0, 200, 240, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 200, 240, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 10%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 10%, transparent 70%);
+      opacity: 0.6;
+    }
+
+    .loader-readout {
+      display: flex;
+      gap: 28px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    .loader-readout span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .loader-readout .ok {
+      color: var(--accent);
+    }
+
+    .loader-readout .ok::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* ─── INTERACTIVE EMITS ─── */
+    .ripple {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      pointer-events: none;
+      z-index: 99996;
+      transform: translate(-50%, -50%);
+      animation: rippleOut 0.8s ease-out forwards;
+    }
+
+    @keyframes rippleOut {
+      0% {
+        width: 6px;
+        height: 6px;
+        opacity: 1;
+      }
+
+      100% {
+        width: 80px;
+        height: 80px;
+        opacity: 0;
+      }
+    }
+
+    /* ─── SPECS panel polish ─── */
+    .specs-visual {
+      position: relative !important;
+    }
+
+    .specs-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(0, 200, 240, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 200, 240, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    .specs-schematic {
+      position: relative;
+      width: 70%;
+      height: 70%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .specs-schematic svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .specs-rocket {
+      position: absolute;
+      bottom: 24px;
+      right: 32px;
+      font-size: 14px !important;
+      font-family: var(--mono);
+      letter-spacing: 0.3em !important;
+      color: var(--accent) !important;
+      opacity: 0.7;
+    }
+
+    .specs-corners {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .specs-corners::before,
+    .specs-corners::after,
+    .specs-corners>i:first-child,
+    .specs-corners>i:last-child {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: var(--accent);
+      border-style: solid;
+      border-width: 0;
+    }
+
+    .specs-corners::before {
+      top: 0;
+      left: 0;
+      border-top-width: 1px;
+      border-left-width: 1px;
+    }
+
+    .specs-corners::after {
+      top: 0;
+      right: 0;
+      border-top-width: 1px;
+      border-right-width: 1px;
+    }
+
+    .specs-corners>i:first-child {
+      bottom: 0;
+      left: 0;
+      border-bottom-width: 1px;
+      border-left-width: 1px;
+      display: block;
+    }
+
+    .specs-corners>i:last-child {
+      bottom: 0;
+      right: 0;
+      border-bottom-width: 1px;
+      border-right-width: 1px;
+      display: block;
+    }
+
+    @keyframes rocketGlow {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 4px var(--accent));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 18px var(--accent));
+      }
+    }
+
+    .schematic-flame {
+      animation: flameFlicker 0.2s steps(2, end) infinite;
+      transform-origin: center top;
+    }
+
+    @keyframes flameFlicker {
+      0% {
+        opacity: 0.9;
+        transform: scaleY(1);
+      }
+
+      100% {
+        opacity: 0.7;
+        transform: scaleY(0.9);
+      }
+    }
+
+    /* ─── FILM GRAIN + VIGNETTE OVERLAY ─── */
+    .fx-grain {
+      position: fixed;
+      inset: -10%;
+      pointer-events: none;
+      z-index: 9000;
+      opacity: 0.07;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      animation: grainShift 0.8s steps(6) infinite;
+      will-change: transform;
+    }
+
+    @keyframes grainShift {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      16% {
+        transform: translate(-2%, 1%);
+      }
+
+      33% {
+        transform: translate(1%, -2%);
+      }
+
+      50% {
+        transform: translate(-1%, -1%);
+      }
+
+      66% {
+        transform: translate(2%, 1%);
+      }
+
+      83% {
+        transform: translate(1%, 2%);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    .fx-vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9001;
+      background:
+        radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.55) 100%),
+        radial-gradient(ellipse at 50% 50%, transparent 70%, rgba(3, 5, 10, 0.35) 100%);
+    }
+
+    .fx-aberration {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9002;
+      background:
+        radial-gradient(circle at 0% 50%, rgba(0, 200, 240, 0.04), transparent 30%),
+        radial-gradient(circle at 100% 50%, rgba(255, 92, 46, 0.04), transparent 30%);
+      mix-blend-mode: screen;
+      opacity: 0.6;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fx-grain {
+        animation: none;
+      }
+    }
+
+    /* ─── SCHEMATIC v2 — reveal, hotspots, parallax ─── */
+    .specs-schematic svg path,
+    .specs-schematic svg rect,
+    .specs-schematic svg line,
+    .specs-schematic svg circle,
+    .specs-schematic svg ellipse {
+      stroke-dasharray: 1200;
+      stroke-dashoffset: 1200;
+      transition: stroke-dashoffset 1.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .specs-schematic svg text {
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      transition-delay: 1.2s;
+    }
+
+    .specs-schematic.reveal svg path,
+    .specs-schematic.reveal svg rect,
+    .specs-schematic.reveal svg line,
+    .specs-schematic.reveal svg circle,
+    .specs-schematic.reveal svg ellipse {
+      stroke-dashoffset: 0;
+    }
+
+    .specs-schematic.reveal svg text {
+      opacity: 1;
+    }
+
+    /* Flame should still animate (override dasharray for the flame element) */
+    .specs-schematic svg .schematic-flame {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+      opacity: 0;
+      transition: opacity 0.5s ease 1.4s;
+    }
+
+    .specs-schematic.reveal svg .schematic-flame {
+      opacity: 1;
+      animation: flameFlicker 0.2s steps(2, end) infinite;
+    }
+
+    /* Parallax layer groups */
+    .specs-schematic .layer-bg,
+    .specs-schematic .layer-mid,
+    .specs-schematic .layer-fg {
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    /* Hotspots (invisible until hover) */
+    .spec-hotspot {
+      fill: rgba(0, 200, 240, 0);
+      stroke: rgba(0, 200, 240, 0);
+      stroke-width: 0;
+      cursor: help;
+      transition: fill 0.3s, stroke 0.3s, stroke-width 0.3s;
+      /* Override reveal dasharray for hotspots */
+      stroke-dasharray: none !important;
+      stroke-dashoffset: 0 !important;
+    }
+
+    .specs-schematic:hover .spec-hotspot {
+      stroke: rgba(0, 200, 240, 0.25);
+      stroke-width: 0.8;
+    }
+
+    .spec-hotspot:hover {
+      fill: rgba(0, 200, 240, 0.18) !important;
+      stroke: rgba(0, 200, 240, 0.85) !important;
+      stroke-width: 1.4 !important;
+    }
+
+    /* Tooltip */
+    .spec-tooltip {
+      position: fixed;
+      z-index: 9500;
+      background: rgba(3, 5, 10, 0.96);
+      border: 1px solid var(--accent);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 200, 240, 0.15);
+      padding: 12px 16px 11px;
+      font-family: var(--mono);
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -130%) scale(0.95);
+      transition: opacity 0.25s, transform 0.25s;
+      white-space: nowrap;
+      backdrop-filter: blur(12px);
+      max-width: 260px;
+      white-space: normal;
+    }
+
+    .spec-tooltip.show {
+      opacity: 1;
+      transform: translate(-50%, -130%) scale(1);
+    }
+
+    .spec-tooltip-l {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .spec-tooltip-l::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .spec-tooltip-v {
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .spec-tooltip::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 10px;
+      height: 10px;
+      background: rgba(3, 5, 10, 0.96);
+      border-right: 1px solid var(--accent);
+      border-bottom: 1px solid var(--accent);
+    }
+
+    /* ─── SCROLL PROGRESS BAR (top) ─── */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--hot));
+      z-index: 9999;
+      box-shadow: 0 0 12px var(--accent);
+      pointer-events: none;
+    }
+
+    /* ─── FOCUS INDICATOR (WCAG) ─── */
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ─── SKIP LINK ─── */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      z-index: 100000;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: var(--black);
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+    }
+
+    .skip-link:focus {
+      left: 16px;
+      top: 16px;
+    }
+
+    /* ─── BUTTON RESETS ─── */
+    button.btn-ghost {
+      background: none;
+      cursor: none;
+      font-family: var(--font-display);
+    }
+
+    span.news-lnk {
+      cursor: none;
+    }
+
+    /* ─── PRINT STYLESHEET ─── */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+        cursor: auto !important;
+      }
+
+      #space-canvas,
+      #cursor,
+      #cursor-trail,
+      .trail-dot,
+      .fx-grain,
+      .fx-vignette,
+      .fx-aberration,
+      .scroll-progress,
+      .side-ruler,
+      .section-indicator,
+      .mission-clock,
+      .ticker-wrap,
+      #loader,
+      .hero-scroll,
+      .mob-nav,
+      .hamburger {
+        display: none !important;
+      }
+
+      nav {
+        position: relative !important;
+        background: white !important;
+        border-bottom: 1px solid #ccc !important;
+      }
+
+      .nav-links a,
+      .f-links a {
+        color: #333 !important;
+      }
+
+      .s-title,
+      .hero-title,
+      h1,
+      h2,
+      h3 {
+        color: #111 !important;
+      }
+
+      .cap-card,
+      .news-card,
+      .metric-card {
+        border: 1px solid #ccc !important;
+        background: white !important;
+      }
+
+      .cap-dsc,
+      .specs-desc,
+      .timeline-desc,
+      .news-exc,
+      .about-text p,
+      .hero-sub,
+      .cta-body {
+        color: #444 !important;
+      }
+
+      a {
+        color: #0366d6 !important;
+      }
+
+      footer {
+        background: white !important;
+      }
+
+      .partners-strip {
+        background: white !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Skip to content -->
+  <a class="skip-link" href="#hero">Ana içeriğe geç</a>
+
+  <!-- LOADING SCREEN -->
+  <div id="loader">
+    <div class="loader-grid"></div>
+    <div class="loader-logo"><img src="Vector.svg" alt="DELTAV" class="brand-logo large"></div>
+    <div class="loader-track">
+      <div class="loader-bar" id="loaderBar"></div>
+    </div>
+    <div class="loader-status" id="loaderStatus">Sistemler Kontrol Ediliyor...</div>
+    <div class="loader-readout">
+      <span class="ok">FUEL · NOM</span>
+      <span class="ok">GIMBAL · OK</span>
+      <span class="ok">LINK · ACQ</span>
+      <span id="loaderT">T-00:00</span>
+    </div>
+  </div>
+
+  <!-- Top scroll progress -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- Post-processing overlays (cinematic) -->
+  <div class="fx-vignette" aria-hidden="true"></div>
+  <div class="fx-aberration" aria-hidden="true"></div>
+  <div class="fx-grain" aria-hidden="true"></div>
+
+  <!-- Shared schematic tooltip -->
+  <div class="spec-tooltip" id="specTip" aria-hidden="true">
+    <div class="spec-tooltip-l" id="specTipL">LABEL</div>
+    <div class="spec-tooltip-v" id="specTipV">Value</div>
+  </div>
+
+  <!-- Three.js canvas -->
+  <canvas id="space-canvas"></canvas>
+
+  <!-- Section indicator (left) -->
+  <div class="section-indicator" id="sectionIndicator">
+    <a href="#hero" data-target="hero"><span class="si-dot"></span><span class="si-label">Mission</span></a>
+    <a href="#about" data-target="about"><span class="si-dot"></span><span class="si-label">Kimiz</span></a>
+    <a href="#capabilities" data-target="capabilities"><span class="si-dot"></span><span
+        class="si-label">Kabiliyet</span></a>
+    <a href="#specs" data-target="specs"><span class="si-dot"></span><span class="si-label">Teknik</span></a>
+    <a href="#programs" data-target="programs"><span class="si-dot"></span><span class="si-label">Program</span></a>
+    <a href="#timeline" data-target="timeline"><span class="si-dot"></span><span class="si-label">Tarih</span></a>
+    <a href="#metrics" data-target="metrics"><span class="si-dot"></span><span class="si-label">Metrik</span></a>
+    <a href="#news" data-target="news"><span class="si-dot"></span><span class="si-label">Haber</span></a>
+    <a href="#cta" data-target="cta"><span class="si-dot"></span><span class="si-label">İletişim</span></a>
+  </div>
+
+  <!-- Side ruler (right) -->
+  <div class="side-ruler" id="sideRuler">
+    <div class="side-ruler-line"></div>
+    <div class="side-ruler-marker" id="rulerMarker">
+      <div class="side-ruler-readout" id="rulerReadout">ALT 000 KM</div>
+    </div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-trail"></div>
+
+  <!-- Mobile nav -->
+  <div class="mob-nav" id="mobNav">
+    <a href="#about" onclick="closeMob()">Hakkımızda</a>
+    <a href="#capabilities" onclick="closeMob()">Kabiliyetler</a>
+    <a href="#specs" onclick="closeMob()">Teknik</a>
+    <a href="#programs" onclick="closeMob()">Programlar</a>
+    <a href="#timeline" onclick="closeMob()">Zaman Çizelgesi</a>
+    <a href="#news" onclick="closeMob()">Haberler</a>
+    <a href="#cta" onclick="closeMob()">İletişim</a>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav" role="navigation" aria-label="Ana navigasyon">
+    <a href="#hero" class="logo" aria-label="DELTAV Ana Sayfa">
+      <img src="Vector.svg" alt="DELTAV" class="brand-logo">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">Hakkımızda</a></li>
+      <li><a href="#capabilities">Kabiliyetler</a></li>
+      <li><a href="#specs">Teknik</a></li>
+      <li><a href="#programs">Programlar</a></li>
+      <li><a href="#timeline">Zaman Çizelgesi</a></li>
+      <li><a href="#news">Haberler</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-lang" role="button" tabindex="0" aria-label="Dil değiştir">TR / EN</span>
+      <a href="#cta" class="nav-btn magnetic">İletişim</a>
+      <div class="hamburger" id="ham" onclick="toggleMob()" role="button" aria-label="Menüyü aç/kapat" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" aria-label="Hero bölümü">
+    <div class="hero-media">
+      <img src="1.png" alt="DELTAV SORS Roketi" class="hero-rocket" loading="eager" />
+    </div>
+    <div class="hero-grid-overlay"></div>
+
+    <!-- Mission control clock -->
+    <div class="mission-clock" aria-hidden="true">
+      <div class="mc-label"><span class="mc-dot"></span>SORS 200 KM Rekor · T+</div>
+      <div class="mc-time" id="missionTime">T+ 0d 00:00:00</div>
+      <div class="mc-coord" id="missionCoord">40.9106°N · 29.3201°E</div>
+    </div>
+
+    <div class="hero-eyebrow">
+      <span>DELTAV Uzay Teknolojileri A.Ş. — Pendik, İstanbul</span>
+    </div>
+    <h1 class="hero-title">
+      <span class="line"><span class="line-inner">TÜRKİYE'NİN</span></span>
+      <span class="line"><span class="line-inner">İTKİ</span></span>
+      <span class="line"><span class="line-inner"><em>GÜCÜ</em></span></span>
+    </h1>
+    <p class="hero-sub">Yerli mühendislik gücümüzle, yenilikçi çözümlerimizle küresel uzay sektöründe rekabetçi,
+      güvenilir ve sürdürülebilir teknolojiler geliştiriyoruz.</p>
+    <div class="hero-ctas">
+      <a href="#programs" class="btn-fill magnetic">
+        Misyonlarımız
+        <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 7H13M8 2L13 7L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </a>
+      <a href="#about" class="btn-ghost magnetic">Hakkımızda</a>
+    </div>
+
+    <div class="hero-stats" aria-label="İstatistikler">
+      <div>
+        <div class="hstat-num"><span class="hstat-val" data-target="200">0</span><span class="hstat-suffix">+ KM</span>
+        </div>
+        <div class="hstat-lbl">SORS İrtifa Rekoru</div>
+        <svg class="hstat-spark" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,18 L15,16 L30,14 L45,10 L60,8 L75,4 L100,2" stroke="#00c8f0" stroke-width="1" fill="none"
+            stroke-linecap="round" />
+        </svg>
+      </div>
+      <div>
+        <div class="hstat-num"><span class="hstat-val" data-target="1">0</span><span class="hstat-suffix">st</span>
+        </div>
+        <div class="hstat-lbl">Uzayda Hibrit Ateşleme</div>
+        <svg class="hstat-spark" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,18 L25,17 L50,16 L70,12 L85,6 L100,3" stroke="#ff5c2e" stroke-width="1" fill="none"
+            stroke-linecap="round" />
+        </svg>
+      </div>
+      <div>
+        <div class="hstat-num"><span class="hstat-val" data-target="4">0</span><span class="hstat-suffix"></span></div>
+        <div class="hstat-lbl">Temel Teknoloji</div>
+        <svg class="hstat-spark" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,16 L20,14 L35,15 L50,10 L70,8 L85,9 L100,5" stroke="#00c8f0" stroke-width="1" fill="none"
+            stroke-linecap="round" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-track"></div>
+      <span class="scroll-lbl">Keşfet</span>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker-track">
+      <div class="ticker-inner">
+        <div class="t-item"><span class="t-dot"></span>Hibrit Roket Teknolojileri</div>
+        <div class="t-item"><span class="t-dot"></span>Uzay İtki Sistemleri</div>
+        <div class="t-item"><span class="t-dot"></span>Ay Araştırma Programı</div>
+        <div class="t-item"><span class="t-dot"></span>Sıvı Yakıtlı Motorlar</div>
+        <div class="t-item"><span class="t-dot"></span>SORS — 200 km Rekor</div>
+        <div class="t-item"><span class="t-dot"></span>Kompozit Teknolojiler</div>
+        <div class="t-item"><span class="t-dot"></span>Kriyojenik Sistemler</div>
+      </div>
+      <div class="ticker-inner" aria-hidden="true">
+        <div class="t-item"><span class="t-dot"></span>Hibrit Roket Teknolojileri</div>
+        <div class="t-item"><span class="t-dot"></span>Uzay İtki Sistemleri</div>
+        <div class="t-item"><span class="t-dot"></span>Ay Araştırma Programı</div>
+        <div class="t-item"><span class="t-dot"></span>Sıvı Yakıtlı Motorlar</div>
+        <div class="t-item"><span class="t-dot"></span>SORS — 200 km Rekor</div>
+        <div class="t-item"><span class="t-dot"></span>Kompozit Teknolojiler</div>
+        <div class="t-item"><span class="t-dot"></span>Kriyojenik Sistemler</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about" aria-labelledby="about-title">
+    <div class="about-frame corner-frame">
+      <i class="cf-c1"></i><i class="cf-c2"></i>
+      <div class="about-frame-inner">
+        <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&q=80" alt="Uzay istasyonu görünümü"
+          loading="lazy" />
+      </div>
+      <div class="about-coords">
+        LAT&nbsp;&nbsp;40.9106°N<br>
+        LON&nbsp;29.3201°E<br>
+        ALT&nbsp;&nbsp;0024&nbsp;M
+      </div>
+      <div class="about-readout">SYS · ONLINE</div>
+      <div class="about-line"></div>
+      <div class="about-tag">Teknopark, Pendik — İST</div>
+    </div>
+    <div class="about-text">
+      <div class="s-label">Biz Kimiz</div>
+      <h2 class="s-title" id="about-title">İNSANLIĞI<br>UZAYA TAŞIYAN<br><span
+          style="color:var(--accent)">TEKNOLOJİLER</span></h2>
+      <p>Uzaya erişim ve uzay operasyonlarında kullanılan yenilikçi itki ve alt sistem teknolojilerini geliştiriyoruz.
+      </p>
+      <p>Hibrit itki sistemlerinden sıvı yakıtlı motorlara, kompozit yapılardan kriyojenik sistemlere — yerli
+        mühendislik gücümüzle küresel uzay sektöründe rekabetçi, güvenilir ve sürdürülebilir çözümler üretiyoruz.</p>
+      <div class="about-metrics">
+        <div class="am-item">
+          <div class="am-num" data-target="200">0</div>
+          <div class="am-lbl">KM İrtifa</div>
+        </div>
+        <div class="am-item">
+          <div class="am-num" data-target="4">0</div>
+          <div class="am-lbl">Teknoloji</div>
+        </div>
+        <div class="am-item">
+          <div class="am-num" data-target="2">0</div>
+          <div class="am-lbl">Aktif Program</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:16px;">
+        <a href="#capabilities" class="btn-fill" style="font-size:11px;padding:14px 28px;">Kabiliyetler</a>
+        <a href="#cta" class="btn-ghost" style="font-size:11px;padding:14px 28px;">Kariyer</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section id="capabilities" aria-labelledby="cap-title">
+    <div class="cap-hd">
+      <div>
+        <div class="s-label">Teknolojiler</div>
+        <h2 class="s-title" id="cap-title">KABİLİYETLER</h2>
+      </div>
+      <button class="btn-ghost" style="font-size:11px;padding:14px 28px;"
+        onclick="document.getElementById('specs').scrollIntoView({behavior:'smooth'})">Tümünü Gör</button>
+    </div>
+    <div class="cap-grid">
+
+      <div class="cap-card feature" data-tilt>
+        <div class="cap-status">FLIGHT-PROVEN</div>
+        <div class="cap-n">01</div>
+        <svg class="cap-ico" viewBox="0 0 40 40" fill="none">
+          <path d="M20 4L34 11V20C34 27.732 27.732 34 20 34C12.268 34 6 27.732 6 20V11L20 4Z" stroke="currentColor"
+            stroke-width="1.5" fill="none" />
+          <path d="M20 13V27M14 17L20 13L26 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        <div class="cap-ttl">Hibrit Roket<br>Teknolojileri</div>
+        <div class="cap-dsc">Hibrit İtki Sistemi (HİS), SORS sonda roketinin 2. kademesinde uzayda ateşlenerek "uzayda
+          ateşlenen ilk hibrit sistem" oldu. Aynı teknoloji AYAP kapsamında Ay'a Sert İniş Görevi için geliştirilmeye
+          devam ediyor.</div>
+        <a href="#specs" class="cap-lnk">Detaylar →</a>
+      </div>
+
+      <div class="cap-card" data-tilt>
+        <div class="cap-n">02</div>
+        <svg class="cap-ico" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="1.5" fill="none" />
+          <path d="M20 7V33M7 20H33" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <ellipse cx="20" cy="20" rx="6" ry="14" stroke="currentColor" stroke-width="1.5" fill="none" />
+        </svg>
+        <div class="cap-ttl">Sıvı Yakıtlı Roket<br>Teknolojileri</div>
+        <div class="cap-dsc">Uzaya erişim ve yörünge operasyonları için yüksek performanslı sıvı yakıtlı motorlar ve
+          itki alt sistemleri.</div>
+        <a href="#specs" class="cap-lnk">Detaylar →</a>
+      </div>
+
+      <div class="cap-card" data-tilt>
+        <div class="cap-n">03</div>
+        <svg class="cap-ico" viewBox="0 0 40 40" fill="none">
+          <path d="M8 32L20 8L32 32H8Z" stroke="currentColor" stroke-width="1.5" fill="none" />
+          <path d="M14 22H26M16 27H24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <div class="cap-ttl">Kompozit<br>Teknolojileri</div>
+        <div class="cap-dsc">Hafif ve dayanıklı kompozit yapı çözümleriyle yapısal bütünlük ve kütle optimizasyonu.
+        </div>
+        <a href="#specs" class="cap-lnk">Detaylar →</a>
+      </div>
+
+      <div class="cap-card" data-tilt>
+        <div class="cap-n">04</div>
+        <svg class="cap-ico" viewBox="0 0 40 40" fill="none">
+          <path d="M12 28C12 22 16 16 20 8C24 16 28 22 28 28C28 31.314 24.418 34 20 34C15.582 34 12 31.314 12 28Z"
+            stroke="currentColor" stroke-width="1.5" fill="none" />
+          <path d="M15 28C15 25 17 22 20 16C23 22 25 25 25 28" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" fill="none" />
+        </svg>
+        <div class="cap-ttl">Kriyojenik<br>Sistemler</div>
+        <div class="cap-dsc">Aşırı düşük sıcaklıklarda çalışan kriyojenik akışkan depolama ve iletim sistemleri.</div>
+        <a href="#specs" class="cap-lnk">Detaylar →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HORIZONTAL SCROLL SPECS (SpaceX Style) -->
+  <section id="specs" aria-label="Teknik Özellikler">
+    <div class="specs-wrapper" id="specsWrapper">
+
+      <div class="specs-panel">
+        <div class="specs-num">01</div>
+        <div class="specs-content">
+          <div class="s-label">Sonda Roket Sistemi</div>
+          <h3 class="specs-title">SORS</h3>
+          <p class="specs-desc">İki kademeli sonda roket sistemi. İkinci kademede ateşlenen Hibrit İtki Sistemi (HİS)
+            ile uzayda ateşlenen ilk Türk hibrit sistemi unvanını taşır. 2025'te 200 km irtifayı aşarak rekor kırdı.</p>
+          <div class="specs-data">
+            <div class="sd-item">
+              <div class="sd-val">2 KADEME</div>
+              <div class="sd-lbl">Yapı</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">200+ KM</div>
+              <div class="sd-lbl">İrtifa Rekoru</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">HİBRİT</div>
+              <div class="sd-lbl">2. Kademe İtki</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">2025</div>
+              <div class="sd-lbl">Rekor Yılı</div>
+            </div>
+          </div>
+        </div>
+        <div class="specs-visual">
+          <div class="specs-corners"><i></i><i></i></div>
+          <div class="specs-schematic" data-schematic="sors">
+            <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg"
+              style="animation: rocketGlow 3s ease-in-out infinite;">
+              <!-- BG: labels, ticks, separator -->
+              <g class="layer-bg">
+                <line x1="70" y1="170" x2="130" y2="170" stroke="#00c8f0" stroke-width="0.8" stroke-dasharray="3 3"
+                  opacity=".6" />
+                <text x="140" y="60" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">NOSE</text>
+                <text x="140" y="135" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">2ND</text>
+                <text x="140" y="220" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">1ST</text>
+                <text x="140" y="305" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">MTR</text>
+                <line x1="35" y1="90" x2="42" y2="90" stroke="#6a7f96" stroke-width=".8" />
+                <line x1="35" y1="270" x2="42" y2="270" stroke="#6a7f96" stroke-width=".8" />
+                <line x1="35" y1="330" x2="42" y2="330" stroke="#6a7f96" stroke-width=".8" />
+              </g>
+              <!-- MID: body shells -->
+              <g class="layer-mid">
+                <rect x="70" y="90" width="60" height="180" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+                <rect x="70" y="270" width="60" height="60" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+                <path d="M85 330 L75 360 L125 360 L115 330 Z" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+              </g>
+              <!-- FG: nose, fins, flame -->
+              <g class="layer-fg">
+                <path d="M100 10 L130 90 L70 90 Z" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+                <path d="M70 270 L40 340 L70 320 Z" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+                <path d="M130 270 L160 340 L130 320 Z" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+                <path class="schematic-flame" d="M88 360 L80 390 L100 375 L120 390 L112 360 Z" stroke="#ff5c2e"
+                  stroke-width="1.4" fill="#ff5c2e" fill-opacity=".25" />
+              </g>
+              <!-- HOTSPOTS -->
+              <g class="spec-hotspots">
+                <circle class="spec-hotspot" cx="100" cy="55" r="22" data-l="Nose Cone"
+                  data-v="Aerodinamik başlık · Yeniden kullanılmaz ablatif yapı." />
+                <circle class="spec-hotspot" cx="100" cy="130" r="28" data-l="2. Kademe · HİS"
+                  data-v="Hibrit İtki Sistemi — uzayda ateşlenen ilk Türk hibrit." />
+                <circle class="spec-hotspot" cx="100" cy="220" r="28" data-l="1. Kademe"
+                  data-v="Yükselişte ana itki sağlayan ilk kademe motor bloğu." />
+                <circle class="spec-hotspot" cx="50" cy="320" r="18" data-l="Stabilizatör Kanatçık"
+                  data-v="Pasif aerodinamik stabilizasyon." />
+                <circle class="spec-hotspot" cx="100" cy="350" r="16" data-l="Genleşme Lülesi"
+                  data-v="Yakıt gazlarını süpersonik hızlara genleştirir." />
+              </g>
+            </svg>
+          </div>
+          <div class="specs-rocket">SORS · 01</div>
+        </div>
+        <div class="specs-progress">
+          <div class="specs-progress-bar" id="specsBar1"></div>
+        </div>
+      </div>
+
+      <div class="specs-panel">
+        <div class="specs-num">02</div>
+        <div class="specs-content">
+          <div class="s-label">Hibrit İtki Sistemi</div>
+          <h3 class="specs-title">HİS</h3>
+          <p class="specs-desc">Uzayda ateşlenen ilk Türk hibrit itki sistemi. SORS'un 2. kademesinde uçuş kanıtlandı;
+            AYAP kapsamında Ay görevi için geliştirilmeye devam ediyor.</p>
+          <div class="specs-data">
+            <div class="sd-item">
+              <div class="sd-val">HİBRİT</div>
+              <div class="sd-lbl">İtki Tipi</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">UZAYDA</div>
+              <div class="sd-lbl">İlk Ateşleme</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">SORS · AYAP</div>
+              <div class="sd-lbl">Kullanım</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">AKTİF</div>
+              <div class="sd-lbl">Durum</div>
+            </div>
+          </div>
+        </div>
+        <div class="specs-visual">
+          <div class="specs-corners"><i></i><i></i></div>
+          <div class="specs-schematic" data-schematic="his">
+            <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg"
+              style="animation: rocketGlow 3s ease-in-out infinite;">
+              <!-- BG: dashed centerline, labels -->
+              <g class="layer-bg">
+                <line x1="120" y1="60" x2="120" y2="160" stroke="#00c8f0" stroke-width=".8" stroke-dasharray="2 4"
+                  opacity=".5" />
+                <text x="185" y="68" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">THR</text>
+                <text x="185" y="115" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">OX</text>
+                <text x="185" y="180" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">NOZ</text>
+              </g>
+              <!-- MID: shell + flanges -->
+              <g class="layer-mid">
+                <rect x="80" y="60" width="80" height="100" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+                <rect x="60" y="55" width="120" height="8" stroke="#00c8f0" stroke-width="1.2" fill="none" />
+                <rect x="60" y="158" width="120" height="8" stroke="#00c8f0" stroke-width="1.2" fill="none" />
+                <path d="M85 166 L70 220 L170 220 L155 166 Z" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+              </g>
+              <!-- FG: tank, gimbal, flame -->
+              <g class="layer-fg">
+                <circle cx="120" cy="110" r="18" stroke="#00c8f0" stroke-width="1.2" fill="none" opacity=".7" />
+                <circle cx="120" cy="110" r="6" fill="#00c8f0" opacity=".3" />
+                <path d="M50 110 L70 110 M55 105 L50 110 L55 115" stroke="#ff5c2e" stroke-width="1" fill="none"
+                  opacity=".8" />
+                <path d="M190 110 L170 110 M185 105 L190 110 L185 115" stroke="#ff5c2e" stroke-width="1" fill="none"
+                  opacity=".8" />
+                <path class="schematic-flame" d="M85 220 L100 240 L120 228 L140 240 L155 220 Z" stroke="#ff5c2e"
+                  stroke-width="1.4" fill="#ff5c2e" fill-opacity=".2" />
+              </g>
+              <!-- HOTSPOTS -->
+              <g class="spec-hotspots">
+                <circle class="spec-hotspot" cx="120" cy="59" r="14" data-l="Üst Flanj"
+                  data-v="Aracın yapısal arayüzü ve enjektör bağlantı düzlemi." />
+                <circle class="spec-hotspot" cx="120" cy="110" r="22" data-l="Yakıt + Oksidayzer"
+                  data-v="Hibrit sistemde katı yakıt ve sıvı oksidayzer ayrı tutulur — emniyet ve depolama avantajı." />
+                <circle class="spec-hotspot" cx="60" cy="110" r="14" data-l="Gimbal Aksı (Sol)"
+                  data-v="Lüleyi yön kontrol için açısal hareket ettirir." />
+                <circle class="spec-hotspot" cx="180" cy="110" r="14" data-l="Gimbal Aksı (Sağ)"
+                  data-v="Karşıt eksen — pitch/yaw kontrolü için çift gimbal." />
+                <circle class="spec-hotspot" cx="120" cy="193" r="22" data-l="Genleşme Lülesi"
+                  data-v="Yanma odasının basıncını süpersonik gaz hızına dönüştürür." />
+              </g>
+            </svg>
+          </div>
+          <div class="specs-rocket">HİS · 02</div>
+        </div>
+        <div class="specs-progress">
+          <div class="specs-progress-bar" id="specsBar2"></div>
+        </div>
+      </div>
+
+      <div class="specs-panel">
+        <div class="specs-num">03</div>
+        <div class="specs-content">
+          <div class="s-label">Ay Araştırma Programı</div>
+          <h3 class="specs-title">AYAP</h3>
+          <p class="specs-desc">Türkiye Uzay Ajansı (TUA) ile yürütülen, Türkiye Milli Uzay Programı hedeflerinden olan
+            Ay Araştırma Programı. Ay'a Sert İniş Görevi için Hibrit İtki Sistemi DELTAV tarafından geliştirilmektedir.
+          </p>
+          <div class="specs-data">
+            <div class="sd-item">
+              <div class="sd-val">TUA</div>
+              <div class="sd-lbl">Yürütücü</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">SERT İNİŞ</div>
+              <div class="sd-lbl">Görev Profili</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">HİS</div>
+              <div class="sd-lbl">İtki Sistemi</div>
+            </div>
+            <div class="sd-item">
+              <div class="sd-val">MİLLİ UZAY</div>
+              <div class="sd-lbl">Program</div>
+            </div>
+          </div>
+        </div>
+        <div class="specs-visual">
+          <div class="specs-corners"><i></i><i></i></div>
+          <div class="specs-schematic" data-schematic="ayap">
+            <svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg"
+              style="animation: rocketGlow 3s ease-in-out infinite;">
+              <!-- BG: surface, craters, trajectory line, labels -->
+              <g class="layer-bg">
+                <path d="M0 230 Q130 200 260 230 L260 260 L0 260 Z" stroke="#6a7f96" stroke-width="1" fill="#6a7f96"
+                  fill-opacity=".06" />
+                <circle cx="60" cy="228" r="6" stroke="#6a7f96" stroke-width=".8" fill="none" opacity=".6" />
+                <circle cx="200" cy="225" r="4" stroke="#6a7f96" stroke-width=".8" fill="none" opacity=".6" />
+                <path d="M30 30 Q80 60 130 130" stroke="#00c8f0" stroke-width=".8" stroke-dasharray="3 4" fill="none"
+                  opacity=".5" />
+                <text x="170" y="105" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">COMM</text>
+                <text x="170" y="158" font-family="ui-monospace, monospace" font-size="9" fill="#6a7f96"
+                  letter-spacing="2">PAY</text>
+                <text x="40" y="22" font-family="ui-monospace, monospace" font-size="9" fill="#ff5c2e"
+                  letter-spacing="2">T-300s</text>
+                <text x="115" y="248" font-family="ui-monospace, monospace" font-size="8" fill="#6a7f96"
+                  letter-spacing="2">LUNAR SURFACE</text>
+              </g>
+              <!-- MID: lander body, legs, thruster -->
+              <g class="layer-mid">
+                <rect x="100" y="130" width="60" height="50" stroke="#00c8f0" stroke-width="1.4" fill="none" />
+                <line x1="100" y1="180" x2="75" y2="218" stroke="#00c8f0" stroke-width="1.4" />
+                <line x1="160" y1="180" x2="185" y2="218" stroke="#00c8f0" stroke-width="1.4" />
+                <line x1="115" y1="180" x2="105" y2="218" stroke="#00c8f0" stroke-width="1.4" />
+                <line x1="145" y1="180" x2="155" y2="218" stroke="#00c8f0" stroke-width="1.4" />
+                <ellipse cx="75" cy="218" rx="8" ry="2" stroke="#00c8f0" stroke-width="1" fill="#00c8f0"
+                  fill-opacity=".2" />
+                <ellipse cx="185" cy="218" rx="8" ry="2" stroke="#00c8f0" stroke-width="1" fill="#00c8f0"
+                  fill-opacity=".2" />
+                <path d="M115 180 L108 210 L152 210 L145 180 Z" stroke="#00c8f0" stroke-width="1.2" fill="none" />
+              </g>
+              <!-- FG: antenna, trajectory marker, flame -->
+              <g class="layer-fg">
+                <line x1="130" y1="130" x2="130" y2="100" stroke="#00c8f0" stroke-width="1.2" />
+                <circle cx="130" cy="98" r="3" stroke="#00c8f0" stroke-width="1.2" fill="#00c8f0" fill-opacity=".3" />
+                <circle cx="30" cy="30" r="3" fill="#ff5c2e" opacity=".8" />
+                <path class="schematic-flame" d="M118 210 L125 218 L130 215 L135 218 L142 210 Z" stroke="#ff5c2e"
+                  stroke-width="1" fill="#ff5c2e" fill-opacity=".4" />
+              </g>
+              <!-- HOTSPOTS -->
+              <g class="spec-hotspots">
+                <circle class="spec-hotspot" cx="130" cy="98" r="14" data-l="Komünikasyon Anteni"
+                  data-v="Yer ve yörünge ile telemetri/komut bağlantısı." />
+                <circle class="spec-hotspot" cx="130" cy="155" r="22" data-l="Faydalı Yük Kasası"
+                  data-v="Bilim cihazları + aviyonik bay." />
+                <circle class="spec-hotspot" cx="75" cy="210" r="16" data-l="İniş Ayağı"
+                  data-v="Şok sönümleyici ayak — düzensiz yüzeylere uyumlu." />
+                <circle class="spec-hotspot" cx="185" cy="210" r="16" data-l="İniş Ayağı"
+                  data-v="Çift simetrik ayak konfigürasyonu." />
+                <circle class="spec-hotspot" cx="130" cy="200" r="14" data-l="Frenleme Lülesi · HİS"
+                  data-v="Sert iniş öncesi nihai braking burn için hibrit itki." />
+                <circle class="spec-hotspot" cx="30" cy="30" r="16" data-l="Yörünge Girişi · T-300s"
+                  data-v="İniş manevrasının başlangıç noktası — 5 dk öncesi." />
+              </g>
+            </svg>
+          </div>
+          <div class="specs-rocket">AYAP · 03</div>
+        </div>
+        <div class="specs-progress">
+          <div class="specs-progress-bar" id="specsBar3"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROGRAMS -->
+  <section id="programs" aria-labelledby="prog-title">
+    <div class="prog-hd">
+      <div class="s-label">Misyonlar</div>
+      <h2 class="s-title" id="prog-title">UÇUŞ<br>PROGRAMLARI</h2>
+    </div>
+    <div class="prog-list">
+
+      <div class="prog-row">
+        <div class="prog-idx">01</div>
+        <div class="prog-nm">SORS</div>
+        <div class="prog-dsc">Sonda Roket Sistemi — 100 km irtifayı geçerek karman çizgisinin üzerinde 2. kademe HİS'i
+          ateşledi; 2025'te 200 km irtifa rekorunu kırdı.</div>
+        <div class="prog-meta">
+          <div class="pm-item">
+            <div class="pm-val">200+</div>
+            <div class="pm-lbl">KM</div>
+          </div>
+          <div class="pm-item">
+            <div class="pm-val">2 KADEME</div>
+            <div class="pm-lbl">YAPI</div>
+          </div>
+          <div class="pm-item">
+            <div class="pm-val">HİS</div>
+            <div class="pm-lbl">2. KADEME</div>
+          </div>
+        </div>
+        <div class="prog-badge">Operasyonel</div>
+        <svg class="prog-arr" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M14 7L19 12L14 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <div class="prog-row">
+        <div class="prog-idx">02</div>
+        <div class="prog-nm">AYAP</div>
+        <div class="prog-dsc">Ay Araştırma Programı — Türkiye Uzay Ajansı ile yürütülen Türkiye Milli Uzay Programı
+          kapsamında, Ay'a Sert İniş Görevi için HİS geliştirilmektedir.</div>
+        <div class="prog-meta">
+          <div class="pm-item">
+            <div class="pm-val">TUA</div>
+            <div class="pm-lbl">İŞ BİRLİĞİ</div>
+          </div>
+          <div class="pm-item">
+            <div class="pm-val">SERT İNİŞ</div>
+            <div class="pm-lbl">MİSYON</div>
+          </div>
+          <div class="pm-item">
+            <div class="pm-val">HİS</div>
+            <div class="pm-lbl">İTKİ</div>
+          </div>
+        </div>
+        <div class="prog-badge">Geliştirme</div>
+        <svg class="prog-arr" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M14 7L19 12L14 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <div class="prog-row">
+        <div class="prog-idx">03</div>
+        <div class="prog-nm">HİS</div>
+        <div class="prog-dsc">Hibrit İtki Sistemi — uzayda ateşlenen ilk Türk hibrit sistemi. SORS'un 2. kademesinde
+          test edildi; AYAP kapsamında Ay görevi için geliştirilmeye devam ediyor.</div>
+        <div class="prog-meta">
+          <div class="pm-item">
+            <div class="pm-val">UZAYDA</div>
+            <div class="pm-lbl">İLK ATEŞLEME</div>
+          </div>
+          <div class="pm-item">
+            <div class="pm-val">HİBRİT</div>
+            <div class="pm-lbl">İTKİ TİPİ</div>
+          </div>
+          <div class="pm-item">
+            <div class="pm-val">AKTİF</div>
+            <div class="pm-lbl">DURUM</div>
+          </div>
+        </div>
+        <div class="prog-badge">Ar-Ge</div>
+        <svg class="prog-arr" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M14 7L19 12L14 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline" aria-label="Zaman Çizelgesi">
+    <div class="timeline-hd">
+      <div class="s-label">Yolculuğumuz</div>
+      <h2 class="s-title">ZAMAN ÇİZELGESİ</h2>
+    </div>
+    <div class="timeline-track">
+      <div class="timeline-line"></div>
+      <div class="timeline-line-progress" id="timelineProgress"></div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date"><span class="timeline-year">PT.01</span></div>
+        <div class="timeline-content">
+          <div class="timeline-tag">Milestone · Kuruluş</div>
+          <div class="timeline-title">DELTAV Uzay Teknolojileri A.Ş.</div>
+          <div class="timeline-desc">İstanbul Teknopark, Pendik'te kuruldu. Uzaya erişim ve uzay operasyonlarında
+            kullanılan itki ve alt sistem teknolojilerinin geliştirilmesine başlandı.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date"><span class="timeline-year">PT.02</span></div>
+        <div class="timeline-content">
+          <div class="timeline-tag">Milestone · HİS</div>
+          <div class="timeline-title">Hibrit İtki Sistemi Geliştirme</div>
+          <div class="timeline-desc">Hibrit roket teknolojilerinde ileri Ar-Ge süreçleri. HİS, yerli mühendislik gücüyle
+            prototipten uçuş kanıtlanmış sisteme olgunlaştı.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date"><span class="timeline-year">PT.03</span></div>
+        <div class="timeline-content">
+          <div class="timeline-tag">Milestone · SORS</div>
+          <div class="timeline-title">Uzayda İlk Hibrit Ateşleme</div>
+          <div class="timeline-desc">SORS sonda roketi 100 km irtifayı geçti; 2. kademesinde ateşlenen HİS, "uzayda
+            ateşlenen ilk hibrit sistem" oldu.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item active">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date"><span class="timeline-year">2025</span></div>
+        <div class="timeline-content">
+          <div class="timeline-tag">Şu An · 200 KM Rekor</div>
+          <div class="timeline-title">İrtifa Rekoru</div>
+          <div class="timeline-desc">SORS hibrit roket sistemiyle 200 kilometre irtifayı geçerek Türkiye uzay tarihine
+            geçti (05 Haziran 2025).</div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date"><span class="timeline-year">HEDEF</span></div>
+        <div class="timeline-content">
+          <div class="timeline-tag">Hedef · Ay Görevi</div>
+          <div class="timeline-title">Ay'a Sert İniş</div>
+          <div class="timeline-desc">Türkiye Uzay Ajansı ile yürütülen Ay Araştırma Programı kapsamında Ay'a Sert İniş
+            Görevi için Hibrit İtki Sistemi geliştirilmektedir.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LIVE METRICS -->
+  <section id="metrics" aria-label="Canlı Metrikler">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <linearGradient id="sparkGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#00c8f0" stop-opacity=".35" />
+          <stop offset="100%" stop-color="#00c8f0" stop-opacity="0" />
+        </linearGradient>
+        <linearGradient id="sparkGradientHot" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ff5c2e" stop-opacity=".35" />
+          <stop offset="100%" stop-color="#ff5c2e" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-head">
+          <svg class="metric-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2v20M2 12h20M12 2a10 10 0 0 1 10 10M12 2a10 10 0 0 0-10 10" />
+          </svg>
+          <div class="metric-tag">LIVE</div>
+        </div>
+        <div class="metric-val" data-target="200" data-suffix="+">0<span class="suffix">+</span></div>
+        <div class="metric-lbl">KM İrtifa Rekoru</div>
+        <svg class="metric-spark" viewBox="0 0 200 32" preserveAspectRatio="none">
+          <path class="spark-area"
+            d="M0,30 L20,28 L40,26 L60,22 L80,20 L100,17 L120,13 L140,10 L160,7 L180,5 L200,2 L200,32 L0,32 Z"
+            fill="url(#sparkGradient)" />
+          <path d="M0,30 L20,28 L40,26 L60,22 L80,20 L100,17 L120,13 L140,10 L160,7 L180,5 L200,2" />
+        </svg>
+        <div class="metric-bar">
+          <div class="metric-bar-fill" data-width="85"></div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head">
+          <svg class="metric-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          <div class="metric-tag">ACTIVE</div>
+        </div>
+        <div class="metric-val" data-target="2" data-suffix="">0<span class="suffix"></span></div>
+        <div class="metric-lbl">Aktif Program · SORS & AYAP</div>
+        <svg class="metric-spark" viewBox="0 0 200 32" preserveAspectRatio="none">
+          <path class="spark-area"
+            d="M0,28 L20,26 L40,27 L60,22 L80,24 L100,18 L120,15 L140,16 L160,11 L180,9 L200,6 L200,32 L0,32 Z"
+            fill="url(#sparkGradientHot)" />
+          <path d="M0,28 L20,26 L40,27 L60,22 L80,24 L100,18 L120,15 L140,16 L160,11 L180,9 L200,6" />
+        </svg>
+        <div class="metric-bar">
+          <div class="metric-bar-fill" data-width="60"></div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head">
+          <svg class="metric-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+          <div class="metric-tag">CORE TECH</div>
+        </div>
+        <div class="metric-val" data-target="4" data-suffix="">0<span class="suffix"></span></div>
+        <div class="metric-lbl">Temel Teknoloji Alanı</div>
+        <svg class="metric-spark" viewBox="0 0 200 32" preserveAspectRatio="none">
+          <path class="spark-area" d="M0,28 L25,25 L50,23 L75,18 L100,17 L125,14 L150,11 L175,8 L200,4 L200,32 L0,32 Z"
+            fill="url(#sparkGradient)" />
+          <path d="M0,28 L25,25 L50,23 L75,18 L100,17 L125,14 L150,11 L175,8 L200,4" />
+        </svg>
+        <div class="metric-bar">
+          <div class="metric-bar-fill" data-width="75"></div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head">
+          <svg class="metric-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+          <div class="metric-tag">FIRST</div>
+        </div>
+        <div class="metric-val" data-target="1" data-suffix="">0<span class="suffix">st</span></div>
+        <div class="metric-lbl">Uzayda Hibrit Ateşleme</div>
+        <svg class="metric-spark" viewBox="0 0 200 32" preserveAspectRatio="none">
+          <path class="spark-area"
+            d="M0,30 L20,28 L40,24 L60,22 L80,19 L100,14 L120,12 L140,8 L160,6 L180,4 L200,2 L200,32 L0,32 Z"
+            fill="url(#sparkGradient)" />
+          <path d="M0,30 L20,28 L40,24 L60,22 L80,19 L100,14 L120,12 L140,8 L160,6 L180,4 L200,2" />
+        </svg>
+        <div class="metric-bar">
+          <div class="metric-bar-fill" data-width="100"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWS -->
+  <section id="news" aria-labelledby="news-title">
+    <div class="news-hd">
+      <div>
+        <div class="s-label">Güncel</div>
+        <h2 class="s-title" id="news-title">HABERLER</h2>
+      </div>
+      <button class="btn-ghost" style="font-size:11px;padding:14px 28px;"
+        onclick="document.getElementById('news').scrollIntoView({behavior:'smooth'})">Tüm Haberler</button>
+    </div>
+    <div class="news-grid">
+      <div class="news-card big">
+        <div class="news-tag">MISSION REPORT</div>
+        <div class="news-dt">05 Haziran 2025</div>
+        <div class="news-ttl">DELTAV Hibrit Roket Sistemiyle 200 Kilometre İrtifayı Geçerek Rekor Kırdı</div>
+        <div class="news-exc">Sonda roket sistemimiz SORS'un 2. kademesinde ateşlenen Hibrit İtki Sistemi (HİS), "uzayda
+          ateşlenen ilk hibrit sistem" olarak Türkiye uzay tarihine geçti ve 200 km irtifayı geçti.</div>
+        <span class="news-lnk" role="button" tabindex="0" aria-label="Haber detayı">Devamını Oku →</span>
+      </div>
+      <div class="news-card">
+        <div class="news-dt">08 Aralık 2025</div>
+        <div class="news-ttl">Genel Müdürümüz Dr. Mehmet Kahraman Anadolu Ajansı'na Konuştu</div>
+        <span class="news-lnk" role="button" tabindex="0" aria-label="Haber detayı">Devamını Oku →</span>
+      </div>
+      <div class="news-card">
+        <div class="news-dt">23 Kasım 2025</div>
+        <div class="news-ttl">SSB Başkanı Prof. Dr. Haluk Görgün'den DELTAV Ziyareti</div>
+        <span class="news-lnk" role="button" tabindex="0" aria-label="Haber detayı">Devamını Oku →</span>
+      </div>
+      <div class="news-card">
+        <div class="news-dt">25 Nisan 2026</div>
+        <div class="news-ttl">Nuri Killigil Teknoloji Ödülleri Sahiplerini Buldu</div>
+        <span class="news-lnk" role="button" tabindex="0" aria-label="Haber detayı">Devamını Oku →</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" aria-label="İletişim">
+    <div class="cta-inner">
+      <div class="s-label" style="justify-content:center;">
+        <span style="display:none"></span>Bize Ulaşın
+      </div>
+      <div class="cta-title">BİRLİKTE<br><em>UZAYA</em><br>GİDELİM</div>
+      <p class="cta-body">Kariyer fırsatları, iş birlikleri veya teknik sorgular için ekibimizle iletişime geçin.</p>
+      <div class="cta-acts">
+        <a href="mailto:info@deltav.com.tr" class="btn-fill magnetic">Bize Yazın</a>
+        <a href="#cta" class="btn-ghost magnetic">Kariyer</a>
+      </div>
+      <div class="cta-info">
+        <div class="ci">
+          <div class="ci-l">Adres</div>
+          <div class="ci-v">Sanayi Mah. Teknopark Blv.<br>No: 1/C2 Blok Kat: 1 K. No: 2113<br>Pendik / İstanbul</div>
+        </div>
+        <div class="ci">
+          <div class="ci-l">Telefon</div>
+          <div class="ci-v">+90 216 999 51 47</div>
+        </div>
+        <div class="ci">
+          <div class="ci-l">E-posta</div>
+          <div class="ci-v">info@deltav.com.tr</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERS STRIP -->
+  <div class="partners-strip" aria-label="İş Birlikleri">
+    <span class="partners-label">Kurumsal İş Birlikleri</span>
+    <span class="partner">Türkiye Uzay Ajansı</span>
+    <span class="partner">Savunma Sanayii Başkanlığı</span>
+    <span class="partner">Türkiye Milli Uzay Programı</span>
+  </div>
+
+  <!-- FOOTER -->
+  <footer role="contentinfo">
+    <div class="f-logo"><img src="deltav-logo-PNG.png" alt="DELTAV" class="brand-logo footer"></div>
+    <ul class="f-links">
+      <li><a href="#about">Hakkımızda</a></li>
+      <li><a href="#capabilities">Kabiliyetler</a></li>
+      <li><a href="#programs">Programlar</a></li>
+      <li><a href="#news">Haberler</a></li>
+      <li><a href="#cta">İletişim</a></li>
+      <li><a href="https://www.deltav.com.tr/" target="_blank" rel="noopener noreferrer">KVK</a></li>
+    </ul>
+    <div class="f-social">
+      <a href="https://instagram.com/deltavuzay" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>
+      <a href="https://linkedin.com/company/deltav-space-technologies" target="_blank" rel="noopener noreferrer"
+        aria-label="LinkedIn">LN</a>
+      <a href="https://x.com/deltavuzay" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">X</a>
+    </div>
+    <div class="f-copy">© 2026 DELTAV Uzay Teknolojileri A.Ş.</div>
+  </footer>
+
+  <script>
+    /* ═══════════════════════════════════════════
+       LOADING SCREEN
+    ═══════════════════════════════════════════ */
+    (function () {
+      const loader = document.getElementById('loader');
+      const bar = document.getElementById('loaderBar');
+      const status = document.getElementById('loaderStatus');
+      const messages = [
+        'Sistemler Kontrol Ediliyor...',
+        'Motorlar Isınıyor...',
+        'Yörünge Hesaplanıyor...',
+        'Fırlatmaya Hazır...'
+      ];
+      let progress = 0;
+      let msgIndex = 0;
+
+      // Fail-safe: force-close loader after 8 seconds
+      const failSafe = setTimeout(() => {
+        if (!loader.classList.contains('done')) {
+          loader.classList.add('done');
+          try { initAnimations(); } catch (e) { console.warn('initAnimations failed:', e); }
+        }
+      }, 8000);
+
+      const interval = setInterval(() => {
+        progress += Math.random() * 15 + 5;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          clearTimeout(failSafe);
+          status.textContent = 'Fırlatmaya Hazır';
+          setTimeout(() => {
+            loader.classList.add('done');
+            try { initAnimations(); } catch (e) { console.warn('initAnimations failed:', e); }
+          }, 600);
+        }
+        bar.style.setProperty('--progress', progress + '%');
+        bar.style.width = progress + '%';
+
+        const newIndex = Math.floor((progress / 100) * messages.length);
+        if (newIndex !== msgIndex && newIndex < messages.length) {
+          msgIndex = newIndex;
+          status.textContent = messages[msgIndex];
+        }
+      }, 200);
+    })();
+
+    /* ═══════════════════════════════════════════
+       LENIS SMOOTH SCROLL
+    ═══════════════════════════════════════════ */
+    let lenis;
+    function initLenis() {
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        smoothTouch: false,
+        touchMultiplier: 2,
+      });
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      // Connect Lenis to GSAP ScrollTrigger
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+      });
+      gsap.ticker.lagSmoothing(0);
+    }
+
+    /* ═══════════════════════════════════════════
+       THREE.JS SPACE BACKGROUND v2 (ENHANCED)
+       — Post-Processing (Bloom), Volumetric Nebulae,
+         Dynamic Space Dust, Advanced Warp, Organic Comets
+    ═══════════════════════════════════════════ */
+    let starShaderRef = null; // exposed for scroll-driven warp
+    (function () {
+      const canvas = document.getElementById('space-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Capped for performance
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x000000, 0);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
+      camera.position.z = 1;
+
+      // 1. Post-Processing (Unreal Bloom)
+      const renderScene = new THREE.RenderPass(scene, camera);
+      const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+      bloomPass.threshold = 0.1;
+      bloomPass.strength = 1.6; // Intense bloom
+      bloomPass.radius = 0.6;
+
+      const composer = new THREE.EffectComposer(renderer);
+      composer.addPass(renderScene);
+      composer.addPass(bloomPass);
+
+      let mouseX = 0, mouseY = 0;
+      let camX = 0, camY = 0;
+      document.addEventListener('mousemove', e => {
+        mouseX = (e.clientX / window.innerWidth - .5) * 2;
+        mouseY = (e.clientY / window.innerHeight - .5) * 2;
+      });
+
+      // ── Star sprite texture (radial gradient) ──
+      function makeCircleTexture(size = 64) {
+        const c = document.createElement('canvas');
+        c.width = c.height = size;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+        g.addColorStop(0, 'rgba(255,255,255,1)');
+        g.addColorStop(0.15, 'rgba(255,255,255,0.9)');
+        g.addColorStop(0.4, 'rgba(255,255,255,0.25)');
+        g.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, size, size);
+        const tex = new THREE.CanvasTexture(c);
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        return tex;
+      }
+      const starTex = makeCircleTexture(96);
+
+      const STAR_PALETTE = [
+        [0.66, 0.78, 1.00],
+        [0.85, 0.92, 1.00],
+        [1.00, 1.00, 1.00],
+        [1.00, 0.98, 0.92],
+        [1.00, 0.93, 0.80],
+        [1.00, 0.84, 0.62],
+        [1.00, 0.62, 0.42],
+      ];
+      const PALETTE_WEIGHTS = [0.04, 0.10, 0.30, 0.22, 0.18, 0.10, 0.06];
+      function pickColor() {
+        let r = Math.random();
+        for (let i = 0; i < PALETTE_WEIGHTS.length; i++) {
+          r -= PALETTE_WEIGHTS[i];
+          if (r <= 0) return STAR_PALETTE[i];
+        }
+        return STAR_PALETTE[2];
+      }
+
+      // 4. Advanced Warp Effect Shader
+      const starShader = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uWarp: { value: 1.0 },
+          uWarpSpeed: { value: 60.0 },
+          uZRange: { value: 1400.0 },
+          uSizeBoost: { value: 1.0 },
+          uTex: { value: starTex },
+        },
+        vertexShader: `
+      attribute float aSize;
+      attribute float aSpeed;
+      attribute float aOffset;
+      attribute vec3  aColor;
+      varying vec3  vColor;
+      varying float vAlpha;
+      varying float vWarpEffect;
+      varying float vAngle;
+      uniform float uTime;
+      uniform float uWarp;
+      uniform float uWarpSpeed;
+      uniform float uZRange;
+      uniform float uSizeBoost;
+      void main() {
+        vColor = aColor;
+        vec3 pos = position;
+        float dz = uTime * uWarpSpeed * uWarp;
+        pos.z = mod(pos.z + dz + uZRange * 0.5, uZRange) - uZRange * 0.5;
+        float tw = 0.55 + 0.45 * sin(uTime * aSpeed + aOffset);
+        vAlpha = tw;
+        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+        
+        vWarpEffect = uWarp;
+        vec2 dir = normalize(position.xy);
+        vAngle = atan(dir.y, dir.x);
+        
+        // Stretch point size dynamically during warp to accommodate the radial streak
+        gl_PointSize = aSize * uSizeBoost * tw * (320.0 / max(1.0, -mv.z)) * (1.0 + uWarp * 5.0);
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+        fragmentShader: `
+      uniform sampler2D uTex;
+      varying vec3  vColor;
+      varying float vAlpha;
+      varying float vWarpEffect;
+      varying float vAngle;
+      void main() {
+        vec2 pt = gl_PointCoord - vec2(0.5);
+        
+        // Rotate point coordinate by -vAngle to align with local X axis
+        float c = cos(-vAngle);
+        float s = sin(-vAngle);
+        vec2 rpt = vec2(pt.x * c - pt.y * s, pt.x * s + pt.y * c);
+        
+        // Stretch along X for motion blur effect
+        float stretch = 1.0 + vWarpEffect * 8.0;
+        rpt.x /= stretch;
+        
+        // Intensity mask for the streak
+        float intensity = exp(-(rpt.x * rpt.x * 60.0 + rpt.y * rpt.y * 300.0));
+        
+        vec4 tex = texture2D(uTex, gl_PointCoord);
+        
+        // Mix standard dot texture with streak mask based on warp speed
+        float alpha = mix(tex.a, intensity, clamp(vWarpEffect * 1.5, 0.0, 1.0));
+        if (alpha < 0.01) discard;
+        
+        gl_FragColor = vec4(vColor, alpha * vAlpha);
+      }
+    `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      starShaderRef = starShader;
+
+      function makeStarLayer(count, spread, sizeBase, sizeJitter, twinkleBase, accentChance = 0) {
+        const geo = new THREE.BufferGeometry();
+        const pos = new Float32Array(count * 3);
+        const cols = new Float32Array(count * 3);
+        const sizes = new Float32Array(count);
+        const speeds = new Float32Array(count);
+        const offsets = new Float32Array(count);
+        for (let i = 0; i < count; i++) {
+          pos[i * 3] = (Math.random() - 0.5) * spread;
+          pos[i * 3 + 1] = (Math.random() - 0.5) * spread;
+          pos[i * 3 + 2] = (Math.random() - 0.5) * spread;
+          let c;
+          if (Math.random() < accentChance) c = [0.30, 0.78, 1.00];
+          else c = pickColor();
+          const j = 0.85 + Math.random() * 0.3;
+          cols[i * 3] = c[0] * j;
+          cols[i * 3 + 1] = c[1] * j;
+          cols[i * 3 + 2] = c[2] * j;
+          const r = Math.random();
+          sizes[i] = sizeBase + sizeJitter * Math.pow(r, 4);
+          speeds[i] = twinkleBase * (0.5 + Math.random() * 2.0);
+          offsets[i] = Math.random() * Math.PI * 2;
+        }
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        geo.setAttribute('aColor', new THREE.BufferAttribute(cols, 3));
+        geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+        geo.setAttribute('aSpeed', new THREE.BufferAttribute(speeds, 1));
+        geo.setAttribute('aOffset', new THREE.BufferAttribute(offsets, 1));
+        return new THREE.Points(geo, starShader);
+      }
+
+      const isMobile = window.innerWidth < 768;
+      const stars1 = makeStarLayer(isMobile ? 2000 : 4500, 1200, 0.30, 0.45, 1.2, 0.02);
+      const stars2 = makeStarLayer(isMobile ? 700 : 1500, 700, 0.55, 0.80, 1.6, 0.05);
+      const stars3 = makeStarLayer(isMobile ? 250 : 500, 400, 0.95, 1.30, 2.1, 0.10);
+      scene.add(stars1, stars2, stars3);
+
+      // 2. Volumetric / Textural Nebulae
+      const nebulaGeo = new THREE.PlaneGeometry(1, 1);
+      const nebulaShader = new THREE.ShaderMaterial({
+        uniforms: {
+          uColor: { value: new THREE.Color() },
+          uTime: { value: 0 },
+          uOpacity: { value: 1.0 }
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 uColor;
+          uniform float uTime;
+          uniform float uOpacity;
+          varying vec2 vUv;
+          
+          float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+          float noise(vec2 p) {
+            vec2 i = floor(p), f = fract(p);
+            f = f * f * (3.0 - 2.0 * f);
+            return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                       mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+          }
+          float fbm(vec2 p) {
+            float v = 0.0, a = 0.5;
+            for (int i=0; i<4; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; }
+            return v;
+          }
+          
+          void main() {
+            vec2 uv = vUv * 2.0 - 1.0;
+            float dist = length(uv);
+            if (dist > 1.0) discard;
+            
+            float edge = smoothstep(1.0, 0.0, dist);
+            float n1 = fbm(vUv * 3.0 + uTime * 0.05);
+            float n2 = fbm(vUv * 5.0 - uTime * 0.08 + n1);
+            float n = fbm(vUv * 2.0 + n2 * 2.0);
+            
+            float alpha = n * edge * uOpacity;
+            gl_FragColor = vec4(uColor, alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+
+      const nebulaeMaterials = [];
+      function makeNebula(colorHex, x, y, z, w, h, op) {
+        const mat = nebulaShader.clone();
+        mat.uniforms.uColor.value.setHex(colorHex);
+        mat.uniforms.uOpacity.value = op;
+        const mesh = new THREE.Mesh(nebulaGeo, mat);
+        mesh.scale.set(w, h, 1);
+        mesh.position.set(x, y, z);
+        nebulaeMaterials.push(mat);
+        return mesh;
+      }
+
+      scene.add(
+        makeNebula(0x003850, -130, 70, -420, 600, 400, 0.25),
+        makeNebula(0x001828, 150, -90, -520, 700, 480, 0.18),
+        makeNebula(0x002030, 30, 30, -340, 450, 320, 0.15),
+        makeNebula(0xff3010, -70, -110, -460, 350, 300, 0.12),
+        makeNebula(0x101a40, 0, 0, -700, 1100, 800, 0.10)
+      );
+
+      // 6. Organic Comets (Particle Trails)
+      const cometGroup = new THREE.Group();
+      scene.add(cometGroup);
+      const comets = [];
+
+      function spawnComet() {
+        const N = 80; // Trail particle count
+        const positions = new Float32Array(N * 3);
+        const sizes = new Float32Array(N);
+        const alphas = new Float32Array(N);
+        for (let i = 0; i < N; i++) { sizes[i] = 1.0; alphas[i] = 1.0; }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+        geo.setAttribute('aAlpha', new THREE.BufferAttribute(alphas, 1));
+
+        const mat = new THREE.ShaderMaterial({
+          uniforms: { uTex: { value: starTex }, uColor: { value: new THREE.Color(0xb6f0ff) } },
+          vertexShader: `
+            attribute float aSize;
+            attribute float aAlpha;
+            varying float vAlpha;
+            void main() {
+              vAlpha = aAlpha;
+              vec4 mv = modelViewMatrix * vec4(position, 1.0);
+              gl_PointSize = aSize * (200.0 / max(1.0, -mv.z));
+              gl_Position = projectionMatrix * mv;
+            }
+          `,
+          fragmentShader: `
+            uniform sampler2D uTex;
+            uniform vec3 uColor;
+            varying float vAlpha;
+            void main() {
+              vec4 t = texture2D(uTex, gl_PointCoord);
+              if (t.a < 0.01) discard;
+              // Fiery transition: cyan head to orange/red tail
+              vec3 c = mix(vec3(0.8, 0.2, 0.05), uColor, vAlpha);
+              gl_FragColor = vec4(c, t.a * vAlpha);
+            }
+          `,
+          transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        });
+        const trail = new THREE.Points(geo, mat);
+
+        const headMat = new THREE.SpriteMaterial({
+          map: starTex, color: 0xb6f0ff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
+        });
+        const head = new THREE.Sprite(headMat);
+
+        const z = -260;
+        const x1 = (Math.random() - 0.5) * 520;
+        const y1 = 60 + Math.random() * 120;
+        const dir = (Math.random() < 0.5 ? -1 : 1);
+        const dx = dir * (260 + Math.random() * 200);
+        const dy = -(140 + Math.random() * 120);
+        const x2 = x1 + dx;
+        const y2 = y1 + dy;
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        const perpX = -dy / Math.hypot(dx, dy), perpY = dx / Math.hypot(dx, dy);
+        const bow = (40 + Math.random() * 60) * (Math.random() < 0.5 ? -1 : 1);
+        const cx = mx + perpX * bow, cy = my + perpY * bow;
+        const curve = new THREE.QuadraticBezierCurve3(
+          new THREE.Vector3(x1, y1, z),
+          new THREE.Vector3(cx, cy, z),
+          new THREE.Vector3(x2, y2, z),
+        );
+
+        cometGroup.add(trail);
+        cometGroup.add(head);
+
+        comets.push({
+          trail, head, curve, geo, headMat,
+          positions, sizes, alphas,
+          t: 0, dur: 1.2 + Math.random() * 0.4, N, trailFrac: 0.35,
+        });
+      }
+      setInterval(spawnComet, 2500 + Math.random() * 2000);
+
+      // 3. Near-field Space Dust
+      const dustCount = isMobile ? 300 : 800;
+      const dustGeo = new THREE.BufferGeometry();
+      const dustPos = new Float32Array(dustCount * 3);
+      const dustSpeeds = new Float32Array(dustCount);
+      for (let i = 0; i < dustCount; i++) {
+        dustPos[i * 3] = (Math.random() - .5) * 800;
+        dustPos[i * 3 + 1] = (Math.random() - .5) * 800;
+        dustPos[i * 3 + 2] = (Math.random() - .5) * 600 + 100;
+        dustSpeeds[i] = 0.5 + Math.random() * 2.5;
+      }
+      dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+      dustGeo.setAttribute('aSpeed', new THREE.BufferAttribute(dustSpeeds, 1));
+
+      const dustMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uTex: { value: starTex } },
+        vertexShader: `
+          attribute float aSpeed;
+          uniform float uTime;
+          varying float vAlpha;
+          void main() {
+            vec3 pos = position;
+            pos.z += uTime * aSpeed * 25.0;
+            if (pos.z > 300.0) pos.z -= 700.0;
+            vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+            vAlpha = smoothstep(10.0, 100.0, -mv.z) * 0.45;
+            gl_PointSize = (12.0 * aSpeed) * (100.0 / max(1.0, -mv.z));
+            gl_Position = projectionMatrix * mv;
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D uTex;
+          varying float vAlpha;
+          void main() {
+            vec4 t = texture2D(uTex, gl_PointCoord);
+            gl_FragColor = vec4(0.4, 0.7, 1.0, t.a * vAlpha);
+          }
+        `,
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+      });
+      const dust = new THREE.Points(dustGeo, dustMat);
+      scene.add(dust);
+
+      let last = performance.now();
+      let tAcc = 0;
+      function animate(now) {
+        requestAnimationFrame(animate);
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+        tAcc += dt;
+
+        starShader.uniforms.uTime.value = tAcc;
+        dustMat.uniforms.uTime.value = tAcc;
+
+        nebulaeMaterials.forEach(m => m.uniforms.uTime.value = tAcc);
+
+        stars1.rotation.y = tAcc * 0.010;
+        stars2.rotation.y = tAcc * 0.016;
+        stars3.rotation.y = tAcc * 0.022;
+        dust.rotation.y = tAcc * 0.03;
+        dust.rotation.x = tAcc * 0.015;
+
+        camX += (mouseX * 0.9 - camX) * 0.025;
+        camY += (-mouseY * 0.6 - camY) * 0.025;
+        camera.position.x = camX;
+        camera.position.y = camY;
+        camera.lookAt(0, 0, 0);
+
+        for (let i = comets.length - 1; i >= 0; i--) {
+          const c = comets[i];
+          c.t += dt;
+          const p = c.t / c.dur;
+          if (p >= 1) {
+            cometGroup.remove(c.trail);
+            cometGroup.remove(c.head);
+            c.geo.dispose();
+            c.trail.material.dispose();
+            c.headMat.dispose();
+            comets.splice(i, 1);
+            continue;
+          }
+          const lead = Math.min(1, p);
+          for (let k = 0; k < c.N; k++) {
+            const back = (k / (c.N - 1)) * c.trailFrac;
+            const tt = Math.max(0, lead - back);
+            const v = c.curve.getPointAt(tt);
+            const spread = (k / c.N) * 12.0;
+            c.positions[k * 3] = v.x + (Math.random() - 0.5) * spread;
+            c.positions[k * 3 + 1] = v.y + (Math.random() - 0.5) * spread;
+            c.positions[k * 3 + 2] = v.z + (Math.random() - 0.5) * spread;
+
+            const fade = 1 - k / (c.N - 1);
+            c.sizes[k] = 6.0 + fade * 18.0;
+            c.alphas[k] = fade * fade;
+          }
+          c.geo.attributes.position.needsUpdate = true;
+          c.geo.attributes.aSize.needsUpdate = true;
+          c.geo.attributes.aAlpha.needsUpdate = true;
+
+          const headPos = c.curve.getPointAt(lead);
+          c.head.position.copy(headPos);
+          const env = Math.sin(p * Math.PI);
+          c.headMat.opacity = env;
+          const s = 5 + env * 8;
+          c.head.scale.set(s, s, 1);
+        }
+
+        composer.render(); // Post-processing render
+      }
+      requestAnimationFrame(animate);
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+    })();
+
+    /* ═══════════════════════════════════════════
+       SCHEMATIC v2 — reveal + tooltip + parallax
+    ═══════════════════════════════════════════ */
+    (function schematicReveal() {
+      const schematics = document.querySelectorAll('.specs-schematic');
+      if (!schematics.length) return;
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('reveal');
+            obs.unobserve(e.target); // Play once only
+          }
+        });
+      }, { threshold: 0.35 });
+      schematics.forEach(s => obs.observe(s));
+    })();
+
+    (function schematicTooltip() {
+      const tip = document.getElementById('specTip');
+      const tipL = document.getElementById('specTipL');
+      const tipV = document.getElementById('specTipV');
+      if (!tip) return;
+      let activeHotspot = null;
+
+      function showTip(h, x, y) {
+        tipL.textContent = h.dataset.l || '';
+        tipV.textContent = h.dataset.v || '';
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+        tip.classList.add('show');
+        activeHotspot = h;
+      }
+      function hideTip() {
+        tip.classList.remove('show');
+        activeHotspot = null;
+      }
+
+      document.querySelectorAll('.spec-hotspot').forEach(h => {
+        // Desktop: mouse events
+        h.addEventListener('mouseenter', e => showTip(h, e.clientX, e.clientY));
+        h.addEventListener('mousemove', e => {
+          tip.style.left = e.clientX + 'px';
+          tip.style.top = e.clientY + 'px';
+        });
+        h.addEventListener('mouseleave', hideTip);
+
+        // Mobile: touch/pointer events
+        h.addEventListener('pointerdown', e => {
+          if (e.pointerType === 'touch') {
+            e.preventDefault();
+            if (activeHotspot === h) { hideTip(); return; }
+            const rect = h.getBoundingClientRect();
+            showTip(h, rect.left + rect.width / 2, rect.top);
+          }
+        });
+      });
+
+      // Close tooltip on outside touch
+      document.addEventListener('pointerdown', e => {
+        if (e.pointerType === 'touch' && activeHotspot && !e.target.closest('.spec-hotspot')) {
+          hideTip();
+        }
+      });
+    })();
+
+    (function schematicParallax() {
+      document.querySelectorAll('.specs-schematic').forEach(sch => {
+        const fg = sch.querySelector('.layer-fg');
+        const mid = sch.querySelector('.layer-mid');
+        const bg = sch.querySelector('.layer-bg');
+        if (!fg && !mid && !bg) return;
+        sch.addEventListener('mousemove', e => {
+          const r = sch.getBoundingClientRect();
+          const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;  // -1..1
+          const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+          if (bg) bg.style.transform = `translate3d(${nx * 2}px, ${ny * 2}px, 0)`;
+          if (mid) mid.style.transform = `translate3d(${nx * 5}px, ${ny * 5}px, 0)`;
+          if (fg) fg.style.transform = `translate3d(${nx * 10}px, ${ny * 10}px, 0)`;
+        });
+        sch.addEventListener('mouseleave', () => {
+          if (bg) bg.style.transform = '';
+          if (mid) mid.style.transform = '';
+          if (fg) fg.style.transform = '';
+        });
+      });
+    })();
+
+    /* ── Scroll-driven warp fade (hero strong → fades after) ── */
+    (function warpScrollFade() {
+      function update() {
+        if (!starShaderRef) return;
+        const vh = window.innerHeight;
+        const fade = Math.max(0.05, 1 - window.scrollY / (vh * 1.4));
+        starShaderRef.uniforms.uWarp.value = fade;
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    })();
+
+    /* ═══════════════════════════════════════════
+       CUSTOM CURSOR + MAGNETIC + TRAIL
+    ═══════════════════════════════════════════ */
+    const cursor = document.getElementById('cursor');
+    const cursorTrail = document.getElementById('cursor-trail');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    // Trail dots
+    const trailDots = [];
+    const TRAIL_COUNT = 12;
+    for (let i = 0; i < TRAIL_COUNT; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'trail-dot';
+      document.body.appendChild(dot);
+      trailDots.push({ el: dot, x: 0, y: 0 });
+    }
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX;
+      my = e.clientY;
+    });
+
+    (function cursorLoop() {
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+
+      rx += (mx - rx) * .12;
+      ry += (my - ry) * .12;
+      cursorTrail.style.left = rx + 'px';
+      cursorTrail.style.top = ry + 'px';
+
+      // Trail
+      let prevX = mx, prevY = my;
+      for (let i = 0; i < trailDots.length; i++) {
+        const dot = trailDots[i];
+        dot.x += (prevX - dot.x) * (0.15 + i * 0.02);
+        dot.y += (prevY - dot.y) * (0.15 + i * 0.02);
+        dot.el.style.left = dot.x + 'px';
+        dot.el.style.top = dot.y + 'px';
+        dot.el.style.opacity = (1 - i / trailDots.length) * 0.5;
+        dot.el.style.transform = `translate(-50%, -50%) scale(${1 - i * 0.06})`;
+        prevX = dot.x;
+        prevY = dot.y;
+      }
+
+      requestAnimationFrame(cursorLoop);
+    })();
+
+    // Magnetic effect (disabled on touch devices)
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const magneticEls = document.querySelectorAll('.magnetic');
+    if (!isTouch) {
+      magneticEls.forEach(el => {
+        el.addEventListener('mousemove', e => {
+          const rect = el.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          el.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+          cursor.classList.add('magnetic');
+        });
+        el.addEventListener('mouseleave', () => {
+          el.style.transform = '';
+          cursor.classList.remove('magnetic');
+        });
+      });
+    }
+
+    // Periodic magnetic class cleanup (prevents stuck state)
+    setInterval(() => {
+      if (!document.querySelector('.magnetic:hover')) {
+        cursor.classList.remove('magnetic');
+      }
+    }, 2000);
+
+    // Hover states
+    document.querySelectorAll('a, button, .cap-card, .prog-row, .news-card, .metric-card').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+
+    /* ═══════════════════════════════════════════
+       NAV PIN + HIDE ON SCROLL
+    ═══════════════════════════════════════════ */
+    const navEl = document.getElementById('nav');
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const current = window.scrollY;
+      navEl.classList.toggle('pinned', current > 50);
+
+      if (current > lastScroll && current > 200) {
+        navEl.classList.add('hidden');
+      } else {
+        navEl.classList.remove('hidden');
+      }
+      lastScroll = current;
+    }, { passive: true });
+
+    /* ═══════════════════════════════════════════
+       MOBILE NAV
+    ═══════════════════════════════════════════ */
+    let mobOpen = false;
+    function toggleMob() {
+      mobOpen = !mobOpen;
+      const mobNav = document.getElementById('mobNav');
+      const ham = document.getElementById('ham');
+      mobNav.classList.toggle('open', mobOpen);
+      ham.classList.toggle('open', mobOpen);
+
+      // Body scroll lock
+      if (mobOpen) {
+        document.body.style.overflow = 'hidden';
+        if (window.lenis) window.lenis.stop();
+        const links = mobNav.querySelectorAll('a');
+        links.forEach((link, i) => {
+          link.style.transitionDelay = (i * 0.08) + 's';
+        });
+      } else {
+        document.body.style.overflow = '';
+        if (window.lenis) window.lenis.start();
+      }
+    }
+    function closeMob() {
+      mobOpen = false;
+      document.getElementById('mobNav').classList.remove('open');
+      document.getElementById('ham').classList.remove('open');
+      document.body.style.overflow = '';
+      if (window.lenis) window.lenis.start();
+    }
+
+    /* ═══════════════════════════════════════════
+       GSAP ANIMATIONS
+    ═══════════════════════════════════════════ */
+    function initAnimations() {
+      initLenis();
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Respect prefers-reduced-motion for GSAP animations
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) {
+        gsap.globalTimeline.timeScale(100); // instant transitions
+      }
+
+      // Hero text reveal
+      const heroLines = document.querySelectorAll('.hero-title .line-inner');
+      gsap.to(heroLines, {
+        y: 0,
+        duration: 1.2,
+        ease: 'power4.out',
+        stagger: 0.15,
+        delay: 0.3
+      });
+
+      gsap.to('.hero-sub', {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        delay: 0.9
+      });
+
+      gsap.to('.hero-ctas', {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        delay: 1.1
+      });
+
+      // Hero stats counter — handled by fixHeroStats() in v2 block (preserves span structure)
+
+      // Scroll reveals
+      gsap.utils.toArray('.s-label, .s-title, .s-body, .about-text p, .about-metrics, .cap-hd, .prog-hd, .news-hd, .timeline-hd').forEach(el => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none none'
+          },
+          y: 40,
+          opacity: 0,
+          duration: 1,
+          ease: 'power3.out'
+        });
+      });
+
+      // Cap cards
+      gsap.utils.toArray('.cap-card').forEach((el, i) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none none'
+          },
+          y: 60,
+          opacity: 0,
+          duration: 0.8,
+          delay: i * 0.1,
+          ease: 'power3.out'
+        });
+      });
+
+      // Program rows
+      gsap.utils.toArray('.prog-row').forEach((el, i) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 90%',
+            toggleActions: 'play none none none'
+          },
+          x: -30,
+          opacity: 0,
+          duration: 0.8,
+          delay: i * 0.15,
+          ease: 'power3.out'
+        });
+      });
+
+      // News cards
+      gsap.utils.toArray('.news-card').forEach((el, i) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none none'
+          },
+          y: 50,
+          opacity: 0,
+          duration: 0.8,
+          delay: i * 0.1,
+          ease: 'power3.out'
+        });
+      });
+
+      // Timeline
+      gsap.utils.toArray('.timeline-item').forEach((el, i) => {
+        const isEven = i % 2 === 0;
+        gsap.from(el.querySelector('.timeline-content'), {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          },
+          x: isEven ? 40 : -40,
+          opacity: 0,
+          duration: 1,
+          ease: 'power3.out'
+        });
+        gsap.from(el.querySelector('.timeline-dot'), {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          },
+          scale: 0,
+          duration: 0.6,
+          ease: 'back.out(2)'
+        });
+      });
+
+      // Timeline progress line
+      ScrollTrigger.create({
+        trigger: '#timeline',
+        start: 'top center',
+        end: 'bottom center',
+        onUpdate: (self) => {
+          document.getElementById('timelineProgress').style.height = (self.progress * 100) + '%';
+        }
+      });
+
+      // About frame parallax
+      gsap.to('.about-frame', {
+        scrollTrigger: {
+          trigger: '#about',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1
+        },
+        y: -40,
+        ease: 'none'
+      });
+
+      // About metrics counter
+      const aboutObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          aboutObs.unobserve(e.target);
+          e.target.querySelectorAll('.am-num').forEach(el => {
+            countUp(el, +el.dataset.target, '');
+          });
+        });
+      }, { threshold: .5 });
+      const aboutMetrics = document.querySelector('.about-metrics');
+      if (aboutMetrics) aboutObs.observe(aboutMetrics);
+
+      // Horizontal scroll specs
+      const specsWrapper = document.getElementById('specsWrapper');
+      const specsPanels = gsap.utils.toArray('.specs-panel');
+
+      if (specsWrapper && specsPanels.length > 0) {
+        gsap.to(specsWrapper, {
+          x: () => -(specsWrapper.scrollWidth - window.innerWidth),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#specs',
+            pin: true,
+            scrub: 1,
+            end: () => '+=' + (specsWrapper.scrollWidth - window.innerWidth),
+            onUpdate: (self) => {
+              const progress = self.progress;
+              const panelProgress = (progress * specsPanels.length) % 1;
+              const activePanel = Math.floor(progress * specsPanels.length);
+
+              specsPanels.forEach((panel, i) => {
+                const bar = panel.querySelector('.specs-progress-bar');
+                if (bar) {
+                  if (i === activePanel) {
+                    bar.style.width = (panelProgress * 100) + '%';
+                  } else if (i < activePanel) {
+                    bar.style.width = '100%';
+                  } else {
+                    bar.style.width = '0%';
+                  }
+                }
+              });
+            }
+          }
+        });
+      }
+
+      // Metrics animation
+      const metricsObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          metricsObs.unobserve(e.target);
+
+          e.target.querySelectorAll('.metric-val').forEach(el => {
+            const target = +el.dataset.target;
+            const numEl = el.childNodes[0];
+            countUp(numEl, target, '', 2000);
+          });
+
+          e.target.querySelectorAll('.metric-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+          });
+        });
+      }, { threshold: .3 });
+      const metricsGrid = document.querySelector('.metrics-grid');
+      if (metricsGrid) metricsObs.observe(metricsGrid);
+
+      // CTA parallax glow
+      gsap.to('#cta::before', {
+        scrollTrigger: {
+          trigger: '#cta',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1
+        },
+        backgroundPosition: '50% 60%',
+        ease: 'none'
+      });
+    }
+
+    /* ═══════════════════════════════════════════
+       COUNTER ANIMATION
+    ═══════════════════════════════════════════ */
+    function countUp(el, target, suffix, duration = 1800) {
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 4);
+        const val = Math.floor(ease * target);
+        el.textContent = val + (suffix || '');
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    /* ═══════════════════════════════════════════
+       MOUSE SPOTLIGHT ON CARDS
+    ═══════════════════════════════════════════ */
+    document.querySelectorAll('.cap-card, .news-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mouse-x', x + '%');
+        card.style.setProperty('--mouse-y', y + '%');
+      });
+    });
+
+    /* ═══════════════════════════════════════════
+       3D TILT EFFECT
+    ═══════════════════════════════════════════ */
+    document.querySelectorAll('[data-tilt]').forEach(el => {
+      el.addEventListener('mousemove', e => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const dx = (x - cx) / cx;
+        const dy = (y - cy) / cy;
+        el.style.transform = `perspective(1000px) rotateY(${dx * 8}deg) rotateX(${-dy * 8}deg) scale3d(1.02, 1.02, 1.02)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale3d(1, 1, 1)';
+      });
+    });
+
+    /* ═══════════════════════════════════════════
+       KEYBOARD NAV
+    ═══════════════════════════════════════════ */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && mobOpen) closeMob();
+    });
+
+    /* ═══════════════════════════════════════════
+       v2 — INTERACTIVE UPGRADES
+    ═══════════════════════════════════════════ */
+
+    /* ── Live mission clock (T+ from SORS 200km record: 5 June 2025) ── */
+    (function missionClock() {
+      const timeEl = document.getElementById('missionTime');
+      const coordEl = document.getElementById('missionCoord');
+      if (!timeEl) return;
+      const launchDate = new Date('2025-06-05T00:00:00+03:00').getTime();
+      function pad(n, l = 2) { return String(n).padStart(l, '0'); }
+      function update() {
+        const t = Math.floor((Date.now() - launchDate) / 1000);
+        const days = Math.floor(t / 86400);
+        const h = Math.floor((t % 86400) / 3600);
+        const m = Math.floor((t % 3600) / 60);
+        const s = t % 60;
+        timeEl.textContent = `T+ ${days}d ${pad(h)}:${pad(m)}:${pad(s)}`;
+        if (coordEl) {
+          const jitterLat = (40.9106 + (Math.random() - 0.5) * 0.0008).toFixed(4);
+          const jitterLon = (29.3201 + (Math.random() - 0.5) * 0.0008).toFixed(4);
+          coordEl.textContent = `${jitterLat}°N · ${jitterLon}°E`;
+        }
+      }
+      update();
+      setInterval(update, 1000);
+    })();
+
+    /* ── Loader T-counter (fixed: T+ upcount, not T- countdown) ── */
+    (function loaderT() {
+      const el = document.getElementById('loaderT');
+      if (!el) return;
+      let n = 0;
+      const id = setInterval(() => {
+        n += 0.13;
+        const s = n.toFixed(2);
+        el.textContent = `T+ ${s}s`;
+        if (document.getElementById('loader')?.classList.contains('done')) clearInterval(id);
+      }, 130);
+    })();
+
+    /* ── Scroll progress + side ruler + section indicator ── */
+    (function scrollHUD() {
+      const sp = document.getElementById('scrollProgress');
+      const sideRuler = document.getElementById('sideRuler');
+      const rulerMarker = document.getElementById('rulerMarker');
+      const rulerReadout = document.getElementById('rulerReadout');
+      const indicator = document.getElementById('sectionIndicator');
+
+      // Build ruler ticks
+      if (sideRuler) {
+        const tickWrap = document.createElement('div');
+        tickWrap.style.cssText = 'position:absolute;inset:0;';
+        for (let i = 0; i <= 20; i++) {
+          const isMajor = i % 4 === 0;
+          const tick = document.createElement('div');
+          tick.className = 'side-ruler-tick ' + (isMajor ? 'major' : 'minor');
+          tick.style.top = (i * 5) + '%';
+          tickWrap.appendChild(tick);
+          if (isMajor) {
+            const lbl = document.createElement('div');
+            lbl.className = 'side-ruler-label';
+            const km = Math.round((20 - i) / 20 * 250);
+            lbl.textContent = pad3(km) + ' KM';
+            lbl.style.top = (i * 5) + '%';
+            tickWrap.appendChild(lbl);
+          }
+        }
+        sideRuler.appendChild(tickWrap);
+      }
+
+      function pad3(n) { return String(n).padStart(3, '0'); }
+
+      let scrollShown = false;
+      const sections = ['hero', 'about', 'capabilities', 'specs', 'programs', 'timeline', 'metrics', 'news', 'cta'];
+
+      function update() {
+        const doc = document.documentElement;
+        const max = doc.scrollHeight - window.innerHeight;
+        const p = Math.min(1, Math.max(0, window.scrollY / Math.max(1, max)));
+        if (sp) sp.style.width = (p * 100) + '%';
+
+        if (window.scrollY > 200 && !scrollShown) {
+          sideRuler?.classList.add('show');
+          indicator?.classList.add('show');
+          scrollShown = true;
+        } else if (window.scrollY <= 200 && scrollShown) {
+          sideRuler?.classList.remove('show');
+          indicator?.classList.remove('show');
+          scrollShown = false;
+        }
+
+        if (rulerMarker) {
+          rulerMarker.style.top = (p * 100) + '%';
+          const altKm = Math.round(p * 250);
+          if (rulerReadout) rulerReadout.textContent = 'ALT ' + pad3(altKm) + ' KM';
+        }
+
+        // Section indicator active state
+        if (indicator) {
+          const links = indicator.querySelectorAll('a');
+          let activeIdx = 0;
+          for (let i = 0; i < sections.length; i++) {
+            const el = document.getElementById(sections[i]);
+            if (!el) continue;
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= window.innerHeight * 0.4) activeIdx = i;
+          }
+          links.forEach((l, i) => l.classList.toggle('active', i === activeIdx));
+        }
+      }
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    })();
+
+    /* ── Click ripple effect ── */
+    (function ripple() {
+      document.addEventListener('click', e => {
+        if (e.target.closest('input, textarea, [contenteditable]')) return;
+        const r = document.createElement('div');
+        r.className = 'ripple';
+        r.style.left = e.clientX + 'px';
+        r.style.top = e.clientY + 'px';
+        document.body.appendChild(r);
+        setTimeout(() => r.remove(), 800);
+      });
+    })();
+
+    /* ── Counter suffix fix — preserve span styling ── */
+    (function fixHeroStats() {
+      const wait = setInterval(() => {
+        const stats = document.querySelectorAll('.hero-stats .hstat-val');
+        if (!stats.length) return;
+        clearInterval(wait);
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            obs.unobserve(e.target);
+            const target = +e.target.dataset.target;
+            const start = performance.now();
+            const duration = 1800;
+            function tick(now) {
+              const p = Math.min((now - start) / duration, 1);
+              const ease = 1 - Math.pow(1 - p, 4);
+              e.target.textContent = Math.floor(ease * target);
+              if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+          });
+        }, { threshold: .5 });
+        stats.forEach(s => obs.observe(s));
+      }, 100);
+    })();
+
+    /* ── Sparkline animated draw on enter ── */
+    (function animateSparks() {
+      const wait = setInterval(() => {
+        const sparks = document.querySelectorAll('.metric-spark path:not(.spark-area), .hstat-spark path');
+        if (!sparks.length) return;
+        clearInterval(wait);
+        sparks.forEach(p => {
+          const len = p.getTotalLength();
+          p.style.strokeDasharray = len;
+          p.style.strokeDashoffset = len;
+          p.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        });
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            e.target.style.strokeDashoffset = 0;
+            obs.unobserve(e.target);
+          });
+        }, { threshold: .3 });
+        sparks.forEach(p => obs.observe(p));
+      }, 100);
+    })();
+
+    /* ── Side-ruler tick hover (smooth scroll on click via section indicator) ── */
+    document.querySelectorAll('#sectionIndicator a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const id = a.dataset.target;
+        const el = document.getElementById(id);
+        if (!el || !window.lenis) {
+          el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        window.lenis.scrollTo(el, { offset: 0, duration: 1.4 });
+      });
+    });
+
+    // expose lenis for the above
+    const _origInitLenis = initLenis;
+    initLenis = function () {
+      _origInitLenis();
+      window.lenis = lenis;
+    };
+
+    /* ── Pointer-reactive cap-card gradient (already partial, ensure listeners on new feature card too) ── */
+    document.querySelectorAll('.cap-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mouse-x', x + '%');
+        card.style.setProperty('--mouse-y', y + '%');
+      });
+    });
+
+    /* ── Keyboard: '/' focuses contact (small power-user touch) ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === '/' && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        const cta = document.getElementById('cta');
+        if (cta && window.lenis) window.lenis.scrollTo(cta, { duration: 1.4 });
+        else cta?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>
